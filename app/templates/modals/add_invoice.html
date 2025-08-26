@@ -23,6 +23,8 @@
       <div id="invoice-items"></div>
       <button type="button" onclick="addInvoiceItem()">+ Add Item</button>
 
+      <h3 style="margin-top:20px;">Grand Total: $<span id="grandTotal">0.00</span></h3>
+
       <button type="submit" id="invoiceSubmitBtn">Create Invoice</button>
       <button type="button" onclick="closeInvoiceModal()">Cancel</button>
     </form>
@@ -48,17 +50,19 @@ function openInvoiceModal(edit=false, data={}) {
       let row=document.createElement('div');
       row.classList.add('item-row');
       row.innerHTML=`
-        <select name="product_id">
+        <select name="product_id" onchange="updateUnitPrice(this)">
           {% for p in products %}
-          <option value="{{ p.id }}">{{ p.name }}</option>
+          <option value="{{ p.id }}" data-price="{{ p.default_price }}">{{ p.name }}</option>
           {% endfor %}
         </select>
-        <input type="number" name="quantity" value="${it.quantity}">
-        <input type="number" step="0.01" name="unit_price" value="${it.unit_price}">
+        <input type="number" name="quantity" value="${it.quantity}" min="1" onchange="recalcRow(this)">
+        <input type="number" step="0.01" name="unit_price" value="${it.unit_price}" onchange="recalcRow(this)">
+        <span class="line-total">$${(it.quantity*it.unit_price).toFixed(2)}</span>
       `;
       row.querySelector("select").value=it.product_id;
       container.appendChild(row);
     });
+    recalcGrandTotal();
   } else {
     document.getElementById('invoiceModalTitle').innerText="Create New Invoice";
     document.getElementById('invoiceSubmitBtn').innerText="Create Invoice";
@@ -66,6 +70,7 @@ function openInvoiceModal(edit=false, data={}) {
     document.getElementById('invoiceForm').reset();
     document.getElementById('invoice-items').innerHTML="";
     addInvoiceItem();
+    recalcGrandTotal();
   }
 }
 
@@ -75,14 +80,49 @@ function addInvoiceItem(){
   let div=document.createElement('div');
   div.classList.add('item-row');
   div.innerHTML=`
-    <select name="product_id">
+    <select name="product_id" onchange="updateUnitPrice(this)">
       {% for p in products %}
-      <option value="{{ p.id }}">{{ p.name }}</option>
+      <option value="{{ p.id }}" data-price="{{ p.default_price }}">{{ p.name }}</option>
       {% endfor %}
     </select>
-    <input type="number" name="quantity" value="1" min="1">
-    <input type="number" step="0.01" name="unit_price" value="0">
+    <input type="number" name="quantity" value="1" min="1" onchange="recalcRow(this)">
+    <input type="number" step="0.01" name="unit_price" value="0" onchange="recalcRow(this)">
+    <span class="line-total">$0.00</span>
   `;
   document.getElementById('invoice-items').appendChild(div);
+  recalcGrandTotal();
+}
+
+function updateUnitPrice(selectElement){
+  const price = selectElement.options[selectElement.selectedIndex].getAttribute("data-price");
+  const row = selectElement.closest(".item-row");
+  const unitInput = row.querySelector('input[name="unit_price"]');
+  unitInput.value = price;
+  recalcRow(unitInput);
+}
+
+function recalcRow(input){
+  const row = input.closest(".item-row");
+  const qty = parseFloat(row.querySelector('input[name="quantity"]').value) || 0;
+  const price = parseFloat(row.querySelector('input[name="unit_price"]').value) || 0;
+  const total = qty * price;
+  row.querySelector(".line-total").innerText = `$${total.toFixed(2)}`;
+  recalcGrandTotal();
+}
+
+function recalcGrandTotal(){
+  let total = 0;
+  document.querySelectorAll(".item-row").forEach(row=>{
+    const qty = parseFloat(row.querySelector('input[name="quantity"]').value) || 0;
+    const price = parseFloat(row.querySelector('input[name="unit_price"]').value) || 0;
+    total += qty * price;
+  });
+  document.getElementById("grandTotal").innerText = total.toFixed(2);
 }
 </script>
+
+<style>
+.item-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+.item-row select, .item-row input { flex: 1; }
+.item-row .line-total { min-width: 80px; text-align: right; font-weight: bold; }
+</style>

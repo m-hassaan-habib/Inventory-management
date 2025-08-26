@@ -8,9 +8,10 @@ def list_invoices():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
+    # fetch invoices
     cursor.execute("""
         SELECT i.id, i.invoice_number, i.invoice_date, i.status,
-               v.name AS vendor_name,
+               v.name AS vendor_name, v.id AS vendor_id,
                SUM(ii.quantity * ii.unit_price) AS total
         FROM invoices i
         JOIN vendors v ON i.vendor_id = v.id
@@ -20,7 +21,7 @@ def list_invoices():
     """)
     invoices = cursor.fetchall()
 
-    # attach items per invoice
+    # attach items to each invoice
     for inv in invoices:
         cursor.execute("""
             SELECT p.name AS product_name, ii.product_id, ii.quantity, ii.unit_price
@@ -30,7 +31,18 @@ def list_invoices():
         """, (inv["id"],))
         inv["items"] = cursor.fetchall()
 
-    return render_template("invoices.html", invoices=invoices)
+    # fetch vendors for dropdown
+    cursor.execute("SELECT id, name FROM vendors ORDER BY name")
+    vendors = cursor.fetchall()
+
+    # fetch products for dropdown (include price)
+    cursor.execute("SELECT id, name, default_price FROM products ORDER BY name")
+    products = cursor.fetchall()
+
+    return render_template("invoices.html",
+                           invoices=invoices,
+                           vendors=vendors,
+                           products=products)
 
 
 @bp.route("/add", methods=["POST"])
