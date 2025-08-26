@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header">
+  <h1>Products</h1>
+  <button onclick="openProductModal()">+ Add Product</button>
+</div>
+
+<div class="cards">
+  {% for p in products %}
+  <div class="card">
+    <h2>{{ p.name }}</h2>
+    <p>{{ p.type }}</p>
+    <p>Variants: {{ p.variants }}</p>
+    <p class="price">${{ p.default_price }}</p>
+    <small>{{ p.usage_count }} invoices</small>
+  </div>
+  {% endfor %}
+</div>
+
+{% include "modals/add_product.html" %}
+{% endblock %}

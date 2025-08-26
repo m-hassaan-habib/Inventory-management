@@ -1,0 +1,58 @@
+<div id="vendorModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2 id="vendorModalTitle">Add New Vendor</h2>
+    <form id="vendorForm" method="post" action="{{ url_for('vendors.add_vendor') }}">
+      <label>Vendor Name *</label>
+      <input type="text" name="name" id="vendorName" required>
+
+      <label>Address</label>
+      <input type="text" name="address" id="vendorAddress">
+
+      <label>Phone Numbers *</label>
+      <div id="phone-list">
+        <input type="text" name="phones" id="vendorPhone" required>
+      </div>
+
+      <label>Email</label>
+      <input type="email" name="email" id="vendorEmail">
+
+      <button type="submit" id="vendorSubmitBtn">Add Vendor</button>
+      <button type="button" onclick="closeVendorModal()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openVendorModal(edit=false, data={}) {
+  document.getElementById('vendorModal').style.display='block';
+
+  if(edit){
+    document.getElementById('vendorModalTitle').innerText="Edit Vendor";
+    document.getElementById('vendorSubmitBtn').innerText="Update Vendor";
+    document.getElementById('vendorForm').action="/vendors/edit/"+data.id;
+
+    document.getElementById('vendorName').value=data.name;
+    document.getElementById('vendorAddress').value=data.address || "";
+    document.getElementById('vendorEmail').value=data.email || "";
+    
+    let phoneList=document.getElementById('phone-list');
+    phoneList.innerHTML="";
+    if(data.phones){
+      data.phones.split(",").forEach(ph=>{
+        let inp=document.createElement("input");
+        inp.type="text"; inp.name="phones"; inp.value=ph;
+        phoneList.appendChild(inp);
+      });
+    }
+  } else {
+    document.getElementById('vendorModalTitle').innerText="Add New Vendor";
+    document.getElementById('vendorSubmitBtn').innerText="Add Vendor";
+    document.getElementById('vendorForm').action="/vendors/add";
+    document.getElementById('vendorForm').reset();
+  }
+}
+
+function closeVendorModal(){
+  document.getElementById('vendorModal').style.display='none';
+}
+</script>

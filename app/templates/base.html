@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>InvoiceFlow</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="sidebar">
+    <h2>InvoiceFlow</h2>
+    <ul>
+      <li><a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('vendors.list_vendors') }}">Vendors</a></li>
+      <li><a href="{{ url_for('products.list_products') }}">Products</a></li>
+      <li><a href="{{ url_for('invoices.list_invoices') }}">Invoices</a></li>
+      <li><a href="{{ url_for('reports.reports') }}">Reports</a></li>
+    </ul>
+  </div>
+  <div class="main-content">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

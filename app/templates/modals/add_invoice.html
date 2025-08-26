@@ -1,0 +1,58 @@
+<div id="invoiceModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>Create New Invoice</h2>
+    <form method="post" action="{{ url_for('invoices.add_invoice') }}">
+      <label>Invoice Date *</label>
+      <input type="date" name="invoice_date" required>
+
+      <label>Status</label>
+      <select name="status">
+        <option value="Pending">Pending</option>
+        <option value="Paid">Paid</option>
+        <option value="Overdue">Overdue</option>
+      </select>
+
+      <label>Vendor *</label>
+      <select name="vendor_id" required>
+        {% for v in vendors %}
+        <option value="{{ v.id }}">{{ v.name }}</option>
+        {% endfor %}
+      </select>
+
+      <h3>Invoice Items</h3>
+      <div id="invoice-items">
+        <div class="item-row">
+          <select name="product_id">
+            {% for p in products %}
+            <option value="{{ p.id }}">{{ p.name }}</option>
+            {% endfor %}
+          </select>
+          <input type="number" name="quantity" value="1" min="1">
+          <input type="number" step="0.01" name="unit_price" value="0">
+        </div>
+      </div>
+      <button type="button" onclick="addInvoiceItem()">+ Add Item</button>
+
+      <button type="submit">Create Invoice</button>
+      <button type="button" onclick="closeInvoiceModal()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openInvoiceModal(){document.getElementById('invoiceModal').style.display='block'}
+function closeInvoiceModal(){document.getElementById('invoiceModal').style.display='none'}
+function addInvoiceItem(){
+  let div=document.createElement('div');
+  div.classList.add('item-row');
+  div.innerHTML=`
+    <select name="product_id">
+      {% for p in products %}
+      <option value="{{ p.id }}">{{ p.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="number" name="quantity" value="1" min="1">
+    <input type="number" step="0.01" name="unit_price" value="0">`;
+  document.getElementById('invoice-items').appendChild(div);
+}
+</script>

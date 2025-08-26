@@ -1,0 +1,26 @@
+<div id="productModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>Add New Product</h2>
+    <form method="post" action="{{ url_for('products.add_product') }}">
+      <label>Product Name *</label>
+      <input type="text" name="name" required>
+
+      <label>Product Type/Niche</label>
+      <input type="text" name="type">
+
+      <label>Variants/Sizes</label>
+      <input type="text" name="variants">
+
+      <label>Default Price</label>
+      <input type="number" step="0.01" name="default_price">
+
+      <button type="submit">Add Product</button>
+      <button type="button" onclick="closeProductModal()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openProductModal(){document.getElementById('productModal').style.display='block'}
+function closeProductModal(){document.getElementById('productModal').style.display='none'}
+</script>
