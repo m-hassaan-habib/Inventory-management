@@ -31,7 +31,7 @@
     <td>{{ inv.vendor_name }}</td>
     <td>{{ inv.invoice_date }}</td>
     <td><span class="badge {{ inv.status|lower }}">{{ inv.status }}</span></td>
-    <td>{{ inv.items }}</td>
+    <td>{{ inv.total_items }}</td>
     <td>${{ inv.total }}</td>
   </tr>
   {% endfor %}

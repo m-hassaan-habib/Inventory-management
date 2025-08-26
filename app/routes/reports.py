@@ -16,7 +16,7 @@ def reports():
         SELECT i.id, i.invoice_number, i.invoice_date, i.status,
                v.id AS vendor_id, v.name AS vendor_name,
                SUM(ii.quantity * ii.unit_price) AS total,
-               SUM(ii.quantity) AS items
+               SUM(ii.quantity) AS total_items
         FROM invoices i
         JOIN vendors v ON i.vendor_id = v.id
         JOIN invoice_items ii ON i.id = ii.invoice_id
@@ -38,7 +38,7 @@ def reports():
     summary = {
         "total_invoices": len(invoices),
         "total_revenue": sum(x["total"] for x in invoices),
-        "total_items": sum(x["items"] for x in invoices)
+        "total_items": sum(x["total_items"] for x in invoices)
     }
 
     # fetch vendors for dropdown
