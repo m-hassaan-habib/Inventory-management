@@ -94,10 +94,8 @@ def edit_invoice(invoice_id):
                       WHERE id=%s""",
                    (vendor_id, invoice_date, status, invoice_id))
 
-    # Clear old items
     cursor.execute("DELETE FROM invoice_items WHERE invoice_id=%s", (invoice_id,))
 
-    # Insert new items
     product_ids = request.form.getlist("product_id")
     quantities = request.form.getlist("quantity")
     prices = request.form.getlist("unit_price")

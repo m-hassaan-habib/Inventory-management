@@ -27,7 +27,6 @@
     <span data-range="year" class="filter-btn px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-indigo-600 hover:text-white">This Year</span>
   </div>
 
-
   <form method="get" id="report-filters" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-700">
     <label class="flex flex-col space-y-1">
       <span>From Date</span>
@@ -59,19 +58,19 @@
 
 <!-- Summary Cards -->
 <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative">
+  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative transition transform hover:scale-[1.02] hover:shadow-lg hover:border-indigo-200 duration-100">
     <span class="block mb-2">Total Invoices</span>
     <p class="font-bold text-slate-900 text-lg mb-1">{{ summary.total_invoices }}</p>
     <p class="text-[10px] text-slate-400">In selected period</p>
     <i class="fas fa-file-invoice-dollar absolute top-4 right-4 text-slate-300 text-xs"></i>
   </div>
-  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative">
+  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative transition transform hover:scale-[1.02] hover:shadow-lg hover:border-indigo-200 duration-100">
     <span class="block mb-2">Total Revenue</span>
     <p class="font-bold text-green-600 text-lg mb-1">${{ summary.total_revenue }}</p>
     <p class="text-[10px] text-slate-400">Gross revenue generated</p>
     <span class="absolute top-4 right-4 text-green-500 text-xs">$</span>
   </div>
-  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative">
+  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative transition transform hover:scale-[1.02] hover:shadow-lg hover:border-indigo-200 duration-100">
     <span class="block mb-2">Total Items Sold</span>
     <p class="font-bold text-orange-500 text-lg mb-1">{{ summary.total_items }}</p>
     <p class="text-[10px] text-slate-400">Total quantity across all invoices</p>
@@ -80,7 +79,7 @@
 </section>
 
 <!-- Invoice Details Table -->
-<section class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 overflow-x-auto">
+<section class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 overflow-x-auto mt-6">
   <h4 class="font-semibold text-slate-900 mb-4">Invoice Details ({{ invoices|length }} invoices)</h4>
   <table class="w-full border-collapse min-w-[600px]">
     <thead>
@@ -95,7 +94,7 @@
     </thead>
     <tbody class="text-[12px] text-slate-900">
       {% for inv in invoices %}
-      <tr class="border-b border-slate-100">
+      <tr class="border-b border-slate-100 transition duration-100 ease-in-out hover:bg-indigo-10 hover:-translate-y-1 hover:shadow-md">
         <td class="py-3 px-3 font-semibold">{{ inv.invoice_number }}</td>
         <td class="py-3 px-3">{{ inv.vendor_name }}</td>
         <td class="py-3 px-3">{{ inv.invoice_date }}</td>

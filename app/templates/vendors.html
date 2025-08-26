@@ -50,7 +50,7 @@
         </thead>
         <tbody id="vendor-tbody">
           {% for v in vendors %}
-          <tr class="{% if loop.index % 2 == 0 %}bg-gray-100{% else %}bg-white{% endif %}">
+          <tr class="transition duration-100 ease-in-out hover:bg-indigo-10 hover:-translate-y-1 hover:shadow-md {% if loop.index % 2 == 0 %}bg-gray-100{% else %}bg-white{% endif %}">
             <td class="pl-4 pr-2 py-3 align-top w-1/6 min-w-[120px] sticky left-0 bg-inherit">
               {{ v.name }}
             </td>
@@ -74,16 +74,18 @@
               {{ v.address }}
             </td>
             <td class="px-2 py-3 align-top w-1/12 min-w-[80px] text-center">
-              <span
-                class="inline-block bg-gray-200 text-gray-900 font-semibold text-xs rounded-full px-2 py-1"
-              >{{ v.invoice_count }}</span>
+              <span class="inline-block bg-gray-200 text-gray-900 font-semibold text-xs rounded-full px-2 py-1">
+                {{ v.invoice_count }}
+              </span>
             </td>
-            <td class="px-2 py-3 align-top w-1/12 min-w-[100px] text-xs">${{ v.total_amount }}</td>
+            <td class="px-2 py-3 align-top w-1/12 min-w-[100px] text-xs">
+              ${{ v.total_amount }}
+            </td>
             <td class="pr-4 py-3 align-top w-1/12 min-w-[100px] space-x-2">
               <button
                 type="button"
                 onclick='openVendorModal(true, {{ v|tojson }})'
-                class="border border-gray-300 rounded-md p-2 text-gray-700 hover:bg-gray-100"
+                class="border border-gray-300 rounded-md p-2 text-gray-700 hover:bg-gray-100 transition duration-200 hover:scale-110"
                 aria-label="Edit {{ v.name }}"
               >
                 <i class="fas fa-edit text-xs"></i>
@@ -91,7 +93,7 @@
               <button
                 type="button"
                 onclick='openDeleteVendorModal({{ v.id }})'
-                class="border border-gray-300 rounded-md p-2 text-gray-700 hover:bg-gray-100"
+                class="border border-gray-300 rounded-md p-2 text-gray-700 hover:bg-gray-100 transition duration-200 hover:scale-110"
                 aria-label="Delete {{ v.name }}"
               >
                 <i class="fas fa-trash-alt text-xs"></i>
