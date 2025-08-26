@@ -48,3 +48,12 @@ def edit_product(product_id):
                    (name, type_, variants, price, product_id))
     db.commit()
     return redirect(url_for("products.list_products"))
+
+
+@bp.route("/delete/<int:product_id>", methods=["POST"])
+def delete_product(product_id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM products WHERE id=%s", (product_id,))
+    db.commit()
+    return redirect(url_for("products.list_products"))

@@ -1,0 +1,47 @@
+<div id="viewInvoiceModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>Invoice Details</h2>
+    <p><strong>Invoice #:</strong> <span id="viewInvoiceNumber"></span></p>
+    <p><strong>Vendor:</strong> <span id="viewInvoiceVendor"></span></p>
+    <p><strong>Date:</strong> <span id="viewInvoiceDate"></span></p>
+    <p><strong>Status:</strong> <span id="viewInvoiceStatus"></span></p>
+    
+    <h3>Items</h3>
+    <table class="table">
+      <tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+      <tbody id="viewInvoiceItems"></tbody>
+    </table>
+
+    <h3>Total: $<span id="viewInvoiceTotal"></span></h3>
+
+    <button type="button" onclick="closeViewInvoiceModal()">Close</button>
+  </div>
+</div>
+
+<script>
+function openViewInvoiceModal(data){
+  document.getElementById('viewInvoiceModal').style.display='block';
+  document.getElementById('viewInvoiceNumber').innerText=data.invoice_number;
+  document.getElementById('viewInvoiceVendor').innerText=data.vendor_name;
+  document.getElementById('viewInvoiceDate').innerText=data.invoice_date;
+  document.getElementById('viewInvoiceStatus').innerText=data.status;
+  document.getElementById('viewInvoiceTotal').innerText=data.total;
+
+  let tbody=document.getElementById('viewInvoiceItems');
+  tbody.innerHTML="";
+  if(data.items){
+    data.items.forEach(it=>{
+      let row=document.createElement("tr");
+      row.innerHTML=`<td>${it.product_name}</td>
+                     <td>${it.quantity}</td>
+                     <td>$${it.unit_price}</td>
+                     <td>$${(it.quantity*it.unit_price).toFixed(2)}</td>`;
+      tbody.appendChild(row);
+    });
+  }
+}
+
+function closeViewInvoiceModal(){
+  document.getElementById('viewInvoiceModal').style.display='none';
+}
+</script>

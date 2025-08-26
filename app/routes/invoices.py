@@ -7,6 +7,7 @@ bp = Blueprint("invoices", __name__, url_prefix="/invoices")
 def list_invoices():
     db = get_db()
     cursor = db.cursor(dictionary=True)
+
     cursor.execute("""
         SELECT i.id, i.invoice_number, i.invoice_date, i.status,
                v.name AS vendor_name,
@@ -18,7 +19,19 @@ def list_invoices():
         ORDER BY i.invoice_date DESC
     """)
     invoices = cursor.fetchall()
+
+    # attach items per invoice
+    for inv in invoices:
+        cursor.execute("""
+            SELECT p.name AS product_name, ii.product_id, ii.quantity, ii.unit_price
+            FROM invoice_items ii
+            JOIN products p ON ii.product_id=p.id
+            WHERE ii.invoice_id=%s
+        """, (inv["id"],))
+        inv["items"] = cursor.fetchall()
+
     return render_template("invoices.html", invoices=invoices)
+
 
 @bp.route("/add", methods=["POST"])
 def add_invoice():
@@ -80,3 +93,14 @@ def edit_invoice(invoice_id):
 
     db.commit()
     return redirect(url_for("invoices.list_invoices"))
+
+
+@bp.route("/delete/<int:invoice_id>", methods=["POST"])
+def delete_invoice(invoice_id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM invoices WHERE id=%s", (invoice_id,))
+    db.commit()
+    return redirect(url_for("invoices.list_invoices"))
+
+

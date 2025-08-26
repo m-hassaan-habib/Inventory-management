@@ -36,3 +36,11 @@ button:hover { background: #4f46e5; }
 }
 .item-row { display: flex; gap: 10px; margin-bottom: 10px; }
 .item-row select, .item-row input { flex: 1; }
+
+.modal-content p { margin: 15px 0; }
+.modal-content button:first-child {
+  background: #dc2626;
+}
+.modal-content button:first-child:hover {
+  background: #b91c1c;
+}

@@ -1,0 +1,20 @@
+<div id="deleteInvoiceModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>Delete Invoice</h2>
+    <p>Are you sure you want to delete this invoice? All its items will also be deleted.</p>
+    <form id="deleteInvoiceForm" method="post">
+      <button type="submit">Yes, Delete</button>
+      <button type="button" onclick="closeDeleteInvoiceModal()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openDeleteInvoiceModal(id){
+  document.getElementById("deleteInvoiceForm").action="/invoices/delete/"+id;
+  document.getElementById("deleteInvoiceModal").style.display="block";
+}
+function closeDeleteInvoiceModal(){
+  document.getElementById("deleteInvoiceModal").style.display="none";
+}
+</script>

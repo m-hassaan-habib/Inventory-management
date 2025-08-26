@@ -63,3 +63,12 @@ def edit_vendor(vendor_id):
 
     db.commit()
     return redirect(url_for("vendors.list_vendors"))
+
+
+@bp.route("/delete/<int:vendor_id>", methods=["POST"])
+def delete_vendor(vendor_id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM vendors WHERE id=%s", (vendor_id,))
+    db.commit()
+    return redirect(url_for("vendors.list_vendors"))
