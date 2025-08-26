@@ -11,46 +11,46 @@
     body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="bg-white text-slate-900 min-h-screen p-4 sm:p-6 md:p-8">
-  <div class="max-w-[1440px] mx-auto border border-slate-300 rounded-2xl overflow-hidden shadow-sm">
+<body class="bg-white-900 text-gray-900">
+  <div class="max-w-[1440px] mx-auto overflow-hidden">
     <div class="flex flex-col md:flex-row min-h-[600px]">
       <!-- Sidebar -->
-      <aside class="bg-white border-r border-slate-300 w-full md:w-56 flex flex-col p-4 space-y-6">
-        <a href="#" class="flex items-center space-x-3">
+      <aside class="bg-white border-r border-gray-300 w-full md:w-56 flex flex-col p-4 space-y-6">
+        <a href="{{ url_for('dashboard.dashboard') }}" class="flex items-center space-x-3">
           <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0">
             <i class="fas fa-file-invoice text-white text-sm"></i>
           </div>
           <div class="leading-tight">
-            <h1 class="text-sm font-semibold text-slate-900">InvoiceFlow</h1>
-            <p class="text-xs text-slate-400">Invoice Management</p>
+            <h1 class="text-sm font-semibold text-gray-900">InvoiceFlow</h1>
+            <p class="text-xs text-gray-500">Invoice Management</p>
           </div>
         </a>
-        <nav class="flex flex-col space-y-2 text-sm text-slate-700">
-          <a href="{{ url_for('dashboard.dashboard') }}" class="flex items-center space-x-2 hover:text-slate-900">
+        <nav class="flex flex-col space-y-2 text-sm text-gray-700">
+          <a href="{{ url_for('dashboard.dashboard') }}" class="flex items-center space-x-2 hover:text-gray-900 {{ 'text-indigo-600 border border-indigo-600 rounded-md px-3 py-1.5' if request.endpoint == 'dashboard.dashboard' else '' }}">
             <i class="fas fa-home text-[14px] w-4"></i>
-            <span>Dashboard</span>
+            <span class="{{ 'font-semibold' if request.endpoint == 'dashboard.dashboard' else '' }}">Dashboard</span>
           </a>
-          <a href="{{ url_for('vendors.list_vendors') }}" class="flex items-center space-x-2 hover:text-slate-900">
+          <a href="{{ url_for('vendors.list_vendors') }}" class="flex items-center space-x-2 hover:text-gray-900 {{ 'text-indigo-600 border border-indigo-600 rounded-md px-3 py-1.5' if request.endpoint == 'vendors.list_vendors' else '' }}">
             <i class="fas fa-users text-[14px] w-4"></i>
-            <span>Vendors</span>
+            <span class="{{ 'font-semibold' if request.endpoint == 'vendors.list_vendors' else '' }}">Vendors</span>
           </a>
-          <a href="{{ url_for('products.list_products') }}" class="flex items-center space-x-2 hover:text-slate-900">
+          <a href="{{ url_for('products.list_products') }}" class="flex items-center space-x-2 hover:text-gray-900 {{ 'text-indigo-600 border border-indigo-600 rounded-md px-3 py-1.5' if request.endpoint == 'products.list_products' else '' }}">
             <i class="fas fa-box-open text-[14px] w-4"></i>
-            <span>Products</span>
+            <span class="{{ 'font-semibold' if request.endpoint == 'products.list_products' else '' }}">Products</span>
           </a>
-          <a href="{{ url_for('invoices.list_invoices') }}" class="flex items-center space-x-2 hover:text-slate-900">
+          <a href="{{ url_for('invoices.list_invoices') }}" class="flex items-center space-x-2 hover:text-gray-900 {{ 'text-indigo-600 border border-indigo-600 rounded-md px-3 py-1.5' if request.endpoint == 'invoices.list_invoices' else '' }}">
             <i class="fas fa-file-invoice-dollar text-[14px] w-4"></i>
-            <span>Invoices</span>
+            <span class="{{ 'font-semibold' if request.endpoint == 'invoices.list_invoices' else '' }}">Invoices</span>
           </a>
-          <a href="{{ url_for('reports.reports') }}" aria-current="page" class="flex items-center space-x-2 text-indigo-600 border border-indigo-600 rounded-md px-3 py-1.5">
+          <a href="{{ url_for('reports.reports') }}" class="flex items-center space-x-2 hover:text-gray-900 {{ 'text-indigo-600 border border-indigo-600 rounded-md px-3 py-1.5' if request.endpoint == 'reports.reports' else '' }}">
             <i class="fas fa-chart-bar text-[14px] w-4"></i>
-            <span class="font-semibold">Reports</span>
+            <span class="{{ 'font-semibold' if request.endpoint == 'reports.reports' else '' }}">Reports</span>
           </a>
         </nav>
       </aside>
       <!-- Main content -->
       <main class="flex-1 bg-white p-6 md:p-8 space-y-6">
-        <header class="flex items-center space-x-2 text-slate-900 font-semibold text-sm border-b border-slate-300 pb-3">
+        <header class="flex items-center space-x-2 text-gray-900 font-semibold text-sm border-b border-gray-300 pb-3">
           <i class="fas fa-file-invoice-dollar text-base"></i>
           <h2>Invoice Management System</h2>
         </header>

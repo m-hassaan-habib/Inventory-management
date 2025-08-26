@@ -1,20 +1,34 @@
-<div id="deleteInvoiceModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <h2>Delete Invoice</h2>
-    <p>Are you sure you want to delete this invoice? All its items will also be deleted.</p>
-    <form id="deleteInvoiceForm" method="post">
-      <button type="submit">Yes, Delete</button>
-      <button type="button" onclick="closeDeleteInvoiceModal()">Cancel</button>
-    </form>
+<div id="deleteInvoiceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" aria-hidden="true">
+  <div role="dialog" aria-modal="true" aria-labelledby="modal-title" class="bg-white rounded-xl max-w-md w-full mx-4">
+    <div class="flex justify-between items-center px-6 pt-6">
+      <h2 id="modal-title" class="text-gray-900 font-semibold text-lg leading-6">Delete Invoice</h2>
+      <button aria-label="Close modal" onclick="closeDeleteInvoiceModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="px-6 pb-8 space-y-6">
+      <p class="text-sm text-gray-700">Are you sure you want to delete this invoice? All its items will also be deleted.</p>
+      <form id="deleteInvoiceForm" method="post" class="flex justify-end space-x-3">
+        <button type="button" onclick="closeDeleteInvoiceModal()" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Cancel</button>
+        <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2">Yes, Delete</button>
+      </form>
+    </div>
   </div>
 </div>
 
 <script>
 function openDeleteInvoiceModal(id){
+  const modal = document.getElementById('deleteInvoiceModal');
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
   document.getElementById("deleteInvoiceForm").action="/invoices/delete/"+id;
-  document.getElementById("deleteInvoiceModal").style.display="block";
 }
+
 function closeDeleteInvoiceModal(){
-  document.getElementById("deleteInvoiceModal").style.display="none";
+  const modal = document.getElementById('deleteInvoiceModal');
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
 }
 </script>
