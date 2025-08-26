@@ -48,3 +48,35 @@ def add_invoice():
 
     db.commit()
     return redirect(url_for("invoices.list_invoices"))
+
+
+@bp.route("/edit/<int:invoice_id>", methods=["POST"])
+def edit_invoice(invoice_id):
+    data = request.form
+    vendor_id = data.get("vendor_id")
+    invoice_date = data.get("invoice_date")
+    status = data.get("status")
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("""UPDATE invoices 
+                      SET vendor_id=%s, invoice_date=%s, status=%s 
+                      WHERE id=%s""",
+                   (vendor_id, invoice_date, status, invoice_id))
+
+    # Clear old items
+    cursor.execute("DELETE FROM invoice_items WHERE invoice_id=%s", (invoice_id,))
+
+    # Insert new items
+    product_ids = request.form.getlist("product_id")
+    quantities = request.form.getlist("quantity")
+    prices = request.form.getlist("unit_price")
+
+    for pid, qty, price in zip(product_ids, quantities, prices):
+        if pid and qty:
+            cursor.execute("INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (%s,%s,%s,%s)",
+                           (invoice_id, pid, qty, price))
+
+    db.commit()
+    return redirect(url_for("invoices.list_invoices"))

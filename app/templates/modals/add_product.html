@@ -1,26 +1,44 @@
 <div id="productModal" class="modal" style="display:none;">
   <div class="modal-content">
-    <h2>Add New Product</h2>
-    <form method="post" action="{{ url_for('products.add_product') }}">
+    <h2 id="productModalTitle">Add New Product</h2>
+    <form id="productForm" method="post" action="{{ url_for('products.add_product') }}">
       <label>Product Name *</label>
-      <input type="text" name="name" required>
+      <input type="text" name="name" id="productName" required>
 
       <label>Product Type/Niche</label>
-      <input type="text" name="type">
+      <input type="text" name="type" id="productType">
 
       <label>Variants/Sizes</label>
-      <input type="text" name="variants">
+      <input type="text" name="variants" id="productVariants">
 
       <label>Default Price</label>
-      <input type="number" step="0.01" name="default_price">
+      <input type="number" step="0.01" name="default_price" id="productPrice">
 
-      <button type="submit">Add Product</button>
+      <button type="submit" id="productSubmitBtn">Add Product</button>
       <button type="button" onclick="closeProductModal()">Cancel</button>
     </form>
   </div>
 </div>
 
 <script>
-function openProductModal(){document.getElementById('productModal').style.display='block'}
+function openProductModal(edit=false, data={}) {
+  document.getElementById('productModal').style.display='block';
+
+  if(edit){
+    document.getElementById('productModalTitle').innerText="Edit Product";
+    document.getElementById('productSubmitBtn').innerText="Update Product";
+    document.getElementById('productForm').action="/products/edit/"+data.id;
+
+    document.getElementById('productName').value=data.name;
+    document.getElementById('productType').value=data.type || "";
+    document.getElementById('productVariants').value=data.variants || "";
+    document.getElementById('productPrice').value=data.default_price || 0;
+  } else {
+    document.getElementById('productModalTitle').innerText="Add New Product";
+    document.getElementById('productSubmitBtn').innerText="Add Product";
+    document.getElementById('productForm').action="/products/add";
+    document.getElementById('productForm').reset();
+  }
+}
 function closeProductModal(){document.getElementById('productModal').style.display='none'}
 </script>

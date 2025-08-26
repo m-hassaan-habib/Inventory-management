@@ -57,8 +57,9 @@ def edit_vendor(vendor_id):
 
     cursor.execute("DELETE FROM vendor_phones WHERE vendor_id=%s", (vendor_id,))
     for phone in phones:
-        cursor.execute("INSERT INTO vendor_phones (vendor_id, phone_number) VALUES (%s,%s)",
-                       (vendor_id, phone))
+        if phone.strip():
+            cursor.execute("INSERT INTO vendor_phones (vendor_id, phone_number) VALUES (%s,%s)",
+                           (vendor_id, phone))
 
     db.commit()
     return redirect(url_for("vendors.list_vendors"))
