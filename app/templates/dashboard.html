@@ -38,6 +38,31 @@
     </div>
   </section>
 
+<!-- Charts section -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-100">
+      <h3 class="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
+        <i class="fas fa-chart-bar text-indigo-600"></i>
+        Revenue Overview
+      </h3>
+      <div class="h-48">  <!-- fixed height wrapper -->
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-100">
+      <h3 class="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
+        <i class="fas fa-chart-pie text-indigo-600"></i>
+        Invoice Status Distribution
+      </h3>
+      <div class="h-48"> <!-- fixed height wrapper -->
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Recent Invoices + Quick Actions -->
   <section class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 gap-6 mb-6">
     <!-- Recent Invoices -->
     <div class="md:col-span-2 bg-white border border-gray-200 rounded-lg p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow duration-100">
@@ -92,72 +117,45 @@
     </div>
   </section>
 
-  <!-- Charts section -->
-  <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-100">
-      <h3 class="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
-        <i class="fas fa-chart-bar text-indigo-600"></i>
-        Revenue Overview
-      </h3>
-      <canvas aria-label="Bar chart showing revenue overview" id="revenueChart" role="img" height="250"></canvas>
-    </div>
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-100">
-      <h3 class="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
-        <i class="fas fa-chart-pie text-indigo-600"></i>
-        Invoice Status Distribution
-      </h3>
-      <canvas aria-label="Pie chart showing invoice status distribution" id="statusChart" role="img" height="250"></canvas>
-    </div>
-  </section>
-
 </div>
 
 {% include "modals/add_vendor.html" %}
 {% include "modals/add_product.html" %}
 
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Add animation to elements when they enter the viewport
-document.addEventListener('DOMContentLoaded', function() {
-  const animatedElements = document.querySelectorAll('.transform');
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('translate-y-0');
-        entry.target.classList.remove('opacity-0');
-      }
-    });
-  }, { threshold: 0.1 });
-  
-  // Initially hide elements
-  animatedElements.forEach(el => {
-    el.classList.add('opacity-0', 'transition-all', 'duration-500');
-    observer.observe(el);
-  });
-});
+const palette = ["#756ceb", "#aba5f3", "#cfcaf8", "#f0eefe", "#f8f6ff"];
 
 // Revenue Chart
 const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+
+// Create gradient
+const gradient = revenueCtx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, "rgba(99, 89, 232, 0.795)");
+gradient.addColorStop(1, "rgba(248, 246, 255, 0)");
+
 const revenueChart = new Chart(revenueCtx, {
-  type: 'bar',
+  type: 'line',
   data: {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
     datasets: [{
       label: 'Revenue',
       data: [12000, 19000, 15000, 22000, 18000, 24000, 20000],
-      backgroundColor: '#4f46e5',
-      borderRadius: 4,
-      barPercentage: 0.6,
+      borderColor: '#6359e8',
+      backgroundColor: gradient, 
+      fill: true,
+      tension: 0.5,
+      pointRadius: 3,
+      pointBackgroundColor: '#f0eefe'
     }]
   },
   options: {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#4f46e5',
+        backgroundColor: '#6359e8',
         titleColor: '#fff',
         bodyColor: '#fff',
       }
@@ -165,47 +163,40 @@ const revenueChart = new Chart(revenueCtx, {
     scales: {
       y: {
         beginAtZero: true,
-        ticks: {
-          color: '#6b7280',
-          font: { size: 12 }
-        },
-        grid: {
-          color: '#e5e7eb'
-        }
+        ticks: { color: '#6b7280', font: { size: 11 } },
+        grid: { color: '#e5e7eb' }
       },
       x: {
-        ticks: {
-          color: '#6b7280',
-          font: { size: 12 }
-        },
-        grid: {
-          display: false
-        }
+        ticks: { color: '#6b7280', font: { size: 11 } },
+        grid: { display: false }
       }
     }
   }
 });
 
+
 // Status Chart
 const statusCtx = document.getElementById('statusChart').getContext('2d');
 const statusChart = new Chart(statusCtx, {
-  type: 'pie',
+  type: 'doughnut',
   data: {
     labels: ['Paid', 'Pending', 'Overdue'],
     datasets: [{
       data: [10, 5, 2],
-      backgroundColor: ['#22c55e', '#fbbf24', '#ef4444'],
+      backgroundColor: palette.slice(0, 3),
       borderWidth: 0,
     }]
   },
   options: {
     responsive: true,
+    maintainAspectRatio: false,
+    cutout: '65%',
     plugins: {
       legend: {
         position: 'bottom',
         labels: {
           color: '#6b7280',
-          font: { size: 12 }
+          font: { size: 11 }
         }
       },
       tooltip: {
@@ -216,5 +207,6 @@ const statusChart = new Chart(statusCtx, {
     }
   }
 });
+
 </script>
 {% endblock %}
