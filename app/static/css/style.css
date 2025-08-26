@@ -44,3 +44,24 @@ button:hover { background: #4f46e5; }
 .modal-content button:first-child:hover {
   background: #b91c1c;
 }
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+}
+.sidebar {
+  min-height: 100vh;
+  background: #212529;
+  color: white;
+  padding: 20px;
+}
+.sidebar h2 { color: #fff; }
+.sidebar a {
+  color: #adb5bd;
+  text-decoration: none;
+  display: block;
+  margin: 10px 0;
+}
+.sidebar a:hover { color: #fff; }
+.main-content { padding: 20px; }
+.card { border-radius: 12px; }
+.badge { font-size: 0.85rem; }
