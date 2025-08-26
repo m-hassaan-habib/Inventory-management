@@ -73,37 +73,66 @@
 </div>
 
 <script>
-const rows = document.querySelectorAll('#invoices-tbody tr');
+const rows = Array.from(document.querySelectorAll('#invoices-tbody tr'));
 const perPage = 10;
 let currentPage = 1;
+let filteredRows = [...rows]; // start with all rows
 
-function showPage(page) {
-  const start = (page - 1) * perPage;
-  const end = start + perPage;
-  rows.forEach((r, i) => {
-    r.style.display = (i >= start && i < end) ? '' : 'none';
+function filterInvoices() {
+  const searchTerm = document.getElementById('search').value.toLowerCase();
+  const statusFilter = document.querySelector('select[aria-label="Filter by status"]').value.toLowerCase();
+
+  filteredRows = rows.filter(row => {
+    const invoiceText = row.innerText.toLowerCase();
+    const statusText = row.querySelector('td:nth-child(4) span').innerText.toLowerCase();
+
+    const matchesSearch = !searchTerm || invoiceText.includes(searchTerm);
+    const matchesStatus = statusFilter === 'all status' || statusText === statusFilter;
+    return matchesSearch && matchesStatus;
   });
-  document.getElementById('page-info').textContent = `Page ${page} of ${Math.ceil(rows.length / perPage)}`;
-  document.querySelector('button[onclick="prevPage()"]').disabled = page === 1;
-  document.querySelector('button[onclick="nextPage()"]').disabled = page >= Math.ceil(rows.length / perPage);
+
+  currentPage = 1;
+  renderPage();
+}
+
+function renderPage() {
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / perPage));
+
+  rows.forEach(r => r.style.display = 'none'); // hide all
+  filteredRows.forEach((row, i) => {
+    if (i >= (currentPage - 1) * perPage && i < currentPage * perPage) {
+      row.style.display = '';
+    }
+  });
+
+  document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+  document.querySelector('button[onclick="prevPage()"]').disabled = currentPage === 1;
+  document.querySelector('button[onclick="nextPage()"]').disabled = currentPage >= totalPages;
 }
 
 function prevPage() {
   if (currentPage > 1) {
     currentPage--;
-    showPage(currentPage);
+    renderPage();
   }
 }
 
 function nextPage() {
-  if (currentPage < Math.ceil(rows.length / perPage)) {
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / perPage));
+  if (currentPage < totalPages) {
     currentPage++;
-    showPage(currentPage);
+    renderPage();
   }
 }
 
-showPage(1);
+// Attach events
+document.getElementById('search').addEventListener('input', filterInvoices);
+document.querySelector('select[aria-label="Filter by status"]').addEventListener('change', filterInvoices);
+
+// Initial load
+renderPage();
 </script>
+
 
 {% include "modals/add_invoice.html" %}
 {% include "modals/delete_invoice.html" %}

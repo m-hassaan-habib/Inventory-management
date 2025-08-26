@@ -132,26 +132,39 @@
   let currentPage = 1;
   const tbody = document.getElementById('vendor-tbody');
   const allRows = Array.from(tbody.getElementsByTagName('tr'));
-  const totalVendors = allRows.length;
-  const totalPages = Math.ceil(totalVendors / vendorsPerPage);
+  let filteredRows = [...allRows]; // start with all
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
   const pageInfo = document.getElementById('page-info');
+  const totalVendors = allRows.length;
+
+  function filterVendors() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    filteredRows = allRows.filter(row =>
+      row.innerText.toLowerCase().includes(searchTerm)
+    );
+    currentPage = 1;
+    updatePagination();
+  }
 
   function updatePagination() {
+    // hide all
     allRows.forEach(row => row.style.display = 'none');
 
+    const totalFiltered = filteredRows.length;
+    const totalPages = Math.max(1, Math.ceil(totalFiltered / vendorsPerPage));
+
     const start = (currentPage - 1) * vendorsPerPage;
-    const end = Math.min(start + vendorsPerPage, totalVendors);
+    const end = Math.min(start + vendorsPerPage, totalFiltered);
 
     for (let i = start; i < end; i++) {
-      allRows[i].style.display = '';
+      filteredRows[i].style.display = '';
     }
 
-    pageInfo.textContent = `${start + 1}-${end} of ${totalVendors}`;
+    pageInfo.textContent = `${start + 1}-${end} of ${totalFiltered}`;
 
     prevButton.disabled = currentPage === 1;
-    nextButton.disabled = currentPage === totalPages;
+    nextButton.disabled = currentPage >= totalPages;
   }
 
   prevButton.addEventListener('click', () => {
@@ -162,14 +175,20 @@
   });
 
   nextButton.addEventListener('click', () => {
+    const totalFiltered = filteredRows.length;
+    const totalPages = Math.max(1, Math.ceil(totalFiltered / vendorsPerPage));
     if (currentPage < totalPages) {
       currentPage++;
       updatePagination();
     }
   });
 
+  document.getElementById('search').addEventListener('input', filterVendors);
+
+  // Initial load
   updatePagination();
 </script>
+
 
 {% include "modals/add_vendor.html" %}
 {% include "modals/delete_vendor.html" %}

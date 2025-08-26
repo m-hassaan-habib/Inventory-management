@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- Reports Title and Export -->
+<!-- Reports Title -->
 <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
   <div>
     <h3 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2">
@@ -9,10 +9,6 @@
     </h3>
     <p class="text-xs text-slate-400 mt-1">Invoice analytics and reporting</p>
   </div>
-  <button type="button" class="mt-4 sm:mt-0 inline-flex items-center space-x-2 border border-slate-300 rounded-md px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-100">
-    <i class="fas fa-download text-sm"></i>
-    <span>Export Report</span>
-  </button>
 </section>
 
 <!-- Report Filters -->
@@ -22,38 +18,33 @@
     <span>Report Filters</span>
   </h4>
 
-  <div class="flex flex-wrap gap-2 text-xs text-slate-700">
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">Today</span>
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">Last 7 Days</span>
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">Last 15 Days</span>
-    <span class="px-2 py-1 rounded-md bg-indigo-600 text-white cursor-pointer">Last 30 Days</span>
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">This Month</span>
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">This Year</span>
-  </div>
-
-  <form method="get" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-700">
+  <form method="get" id="report-filters" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-700">
     <label class="flex flex-col space-y-1">
       <span>From Date</span>
-      <div class="relative">
-        <input type="date" name="from" value="{{ request.args.get('from','') }}" class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400">
-      </div>
+      <input type="date" name="from" value="{{ request.args.get('from','') }}"
+             class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900"
+             onchange="this.form.submit()">
     </label>
     <label class="flex flex-col space-y-1">
       <span>To Date</span>
-      <div class="relative">
-        <input type="date" name="to" value="{{ request.args.get('to','') }}" class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400">
-      </div>
+      <input type="date" name="to" value="{{ request.args.get('to','') }}"
+             class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900"
+             onchange="this.form.submit()">
     </label>
     <label class="flex flex-col space-y-1">
       <span>Vendor</span>
-      <select name="vendor_id" class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900">
+      <select name="vendor_id"
+              class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900"
+              onchange="this.form.submit()">
         <option value="" {% if not request.args.get('vendor_id') %}selected{% endif %}>All Vendors</option>
         {% for v in vendors %}
-          <option value="{{ v.id }}" {% if request.args.get('vendor_id') == v.id|string %}selected{% endif %}>{{ v.name }}</option>
+          <option value="{{ v.id }}" {% if request.args.get('vendor_id') == v.id|string %}selected{% endif %}>
+            {{ v.name }}
+          </option>
         {% endfor %}
       </select>
     </label>
-    <button type="submit" class="col-span-1 sm:col-span-3 inline-flex items-center justify-center space-x-2 border border-indigo-600 bg-indigo-600 rounded-md px-3 py-1.5 text-xs text-white hover:bg-indigo-700">Filter</button>
+    <!-- 🚫 Removed the Filter button -->
   </form>
 </section>
 
