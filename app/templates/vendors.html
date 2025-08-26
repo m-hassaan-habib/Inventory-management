@@ -1,32 +1,176 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="header">
-  <h1>Vendors</h1>
-  <button onclick="openVendorModal()">+ Add Vendor</button>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+  <h2 class="text-2xl font-extrabold text-indigo-900 flex items-center gap-2">
+    <i class="fas fa-building text-indigo-700 text-xl"></i> Vendors
+  </h2>
+  <button
+    onclick="openVendorModal()"
+    type="button"
+    class="inline-flex items-center gap-2 bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-semibold rounded-lg px-4 py-2 mt-4 sm:mt-0"
+  >
+    <i class="fas fa-plus"></i> Add Vendor
+  </button>
+</div>
+<p class="text-gray-600 mb-6">Manage your vendor database</p>
+
+<form class="mb-6">
+  <label for="search" class="sr-only">Search vendors</label>
+  <div
+    class="flex items-center border border-gray-300 rounded-lg px-4 py-2 text-gray-600 text-sm focus-within:ring-2 focus-within:ring-indigo-600"
+  >
+    <i class="fas fa-search mr-2"></i>
+    <input
+      id="search"
+      type="search"
+      placeholder="Search vendors..."
+      class="w-full bg-transparent outline-none"
+    />
+  </div>
+</form>
+
+<div
+  class="border border-gray-300 rounded-lg overflow-hidden text-sm text-gray-700"
+>
+  <div class="bg-white p-6">
+    <h3 class="font-extrabold text-gray-900 mb-4 text-lg">
+      All Vendors ({{ vendors|length }})
+    </h3>
+    <div class="overflow-x-auto">
+      <table class="w-full border-separate border-spacing-y-3" id="vendor-table">
+        <thead class="bg-white text-gray-500 text-xs font-normal sticky top-0 z-10">
+          <tr>
+            <th class="text-left pl-4 pr-2 py-2 w-1/6 min-w-[120px] sticky left-0 bg-white">Name</th>
+            <th class="text-left px-2 py-2 w-1/6 min-w-[150px]">Contact</th>
+            <th class="text-left px-2 py-2 w-1/4 min-w-[200px]">Address</th>
+            <th class="text-left px-2 py-2 w-1/12 min-w-[80px]">Invoices</th>
+            <th class="text-left px-2 py-2 w-1/12 min-w-[100px]">Total Amount</th>
+            <th class="text-left pr-4 py-2 w-1/12 min-w-[100px]">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="vendor-tbody">
+          {% for v in vendors %}
+          <tr class="{% if loop.index % 2 == 0 %}bg-gray-100{% else %}bg-white{% endif %}">
+            <td class="pl-4 pr-2 py-3 align-top w-1/6 min-w-[120px] sticky left-0 bg-inherit">
+              {{ v.name }}
+            </td>
+            <td class="px-2 py-3 align-top w-1/6 min-w-[150px] space-y-2 text-gray-700">
+              {% if v.phones %}
+                {% for phone in v.phones.split(',') %}
+                  <div class="flex items-center gap-1">
+                    <i class="fas fa-phone-alt text-xs"></i>
+                    <span class="font-semibold text-gray-900 text-xs">{{ phone.strip() }}</span>
+                  </div>
+                {% endfor %}
+              {% endif %}
+              {% if v.email %}
+                <div class="flex items-center gap-1 mt-1">
+                  <i class="fas fa-envelope text-xs"></i>
+                  <span class="text-xs">{{ v.email }}</span>
+                </div>
+              {% endif %}
+            </td>
+            <td class="px-2 py-3 align-top w-1/4 min-w-[200px] text-xs text-gray-900">
+              {{ v.address }}
+            </td>
+            <td class="px-2 py-3 align-top w-1/12 min-w-[80px] text-center">
+              <span
+                class="inline-block bg-gray-200 text-gray-900 font-semibold text-xs rounded-full px-2 py-1"
+              >{{ v.invoice_count }}</span>
+            </td>
+            <td class="px-2 py-3 align-top w-1/12 min-w-[100px] text-xs">${{ v.total_amount }}</td>
+            <td class="pr-4 py-3 align-top w-1/12 min-w-[100px] space-x-2">
+              <button
+                type="button"
+                onclick='openVendorModal(true, {{ v|tojson }})'
+                class="border border-gray-300 rounded-md p-2 text-gray-700 hover:bg-gray-100"
+                aria-label="Edit {{ v.name }}"
+              >
+                <i class="fas fa-edit text-xs"></i>
+              </button>
+              <button
+                type="button"
+                onclick='openDeleteVendorModal({{ v.id }})'
+                class="border border-gray-300 rounded-md p-2 text-gray-700 hover:bg-gray-100"
+                aria-label="Delete {{ v.name }}"
+              >
+                <i class="fas fa-trash-alt text-xs"></i>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<table class="table">
-  <tr><th>Name</th><th>Contact</th><th>Address</th><th>Invoices</th><th>Total Amount</th><th>Actions</th></tr>
-  {% for v in vendors %}
-  <tr>
-    <td>{{ v.name }}</td>
-    <td>
-      {% if v.phones %} {{ v.phones }} <br> {% endif %}
-      {% if v.email %} {{ v.email }} {% endif %}
-    </td>
-    <td>{{ v.address }}</td>
-    <td>{{ v.invoice_count }}</td>
-    <td>${{ v.total_amount }}</td>
-    <td>
-      <button onclick='openVendorModal(true, {{ v|tojson }})'>Edit</button>
-      <button onclick='openDeleteVendorModal({{ v.id }})'>Delete</button>
-    </td>
+<!-- Pagination Controls -->
+<div class="flex flex-col sm:flex-row justify-between items-center mt-4 px-6">
+  <div class="text-sm text-gray-600 mb-2 sm:mb-0">
+    Showing <span id="page-info">1-10</span> of {{ vendors|length }} vendors
+  </div>
+  <div class="flex space-x-2">
+    <button
+      id="prev-page"
+      class="border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+      disabled
+    >
+      Previous
+    </button>
+    <button
+      id="next-page"
+      class="border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+    >
+      Next
+    </button>
+  </div>
+</div>
 
-  </tr>
-  {% endfor %}
-</table>
+<script>
+  const vendorsPerPage = 10;
+  let currentPage = 1;
+  const tbody = document.getElementById('vendor-tbody');
+  const allRows = Array.from(tbody.getElementsByTagName('tr'));
+  const totalVendors = allRows.length;
+  const totalPages = Math.ceil(totalVendors / vendorsPerPage);
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
+  const pageInfo = document.getElementById('page-info');
+
+  function updatePagination() {
+    allRows.forEach(row => row.style.display = 'none');
+
+    const start = (currentPage - 1) * vendorsPerPage;
+    const end = Math.min(start + vendorsPerPage, totalVendors);
+
+    for (let i = start; i < end; i++) {
+      allRows[i].style.display = '';
+    }
+
+    pageInfo.textContent = `${start + 1}-${end} of ${totalVendors}`;
+
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage === totalPages;
+  }
+
+  prevButton.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      updatePagination();
+    }
+  });
+
+  nextButton.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      updatePagination();
+    }
+  });
+
+  updatePagination();
+</script>
 
 {% include "modals/add_vendor.html" %}
 {% include "modals/delete_vendor.html" %}
-
 {% endblock %}

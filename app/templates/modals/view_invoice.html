@@ -1,47 +1,89 @@
-<div id="viewInvoiceModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <h2>Invoice Details</h2>
-    <p><strong>Invoice #:</strong> <span id="viewInvoiceNumber"></span></p>
-    <p><strong>Vendor:</strong> <span id="viewInvoiceVendor"></span></p>
-    <p><strong>Date:</strong> <span id="viewInvoiceDate"></span></p>
-    <p><strong>Status:</strong> <span id="viewInvoiceStatus"></span></p>
-    
-    <h3>Items</h3>
-    <table class="table">
-      <tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
-      <tbody id="viewInvoiceItems"></tbody>
-    </table>
+<div id="viewInvoiceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" aria-hidden="true">
+  <div role="dialog" aria-modal="true" aria-labelledby="view-modal-title" class="bg-white rounded-xl max-w-4xl w-full mx-4">
+    <!-- Header -->
+    <div class="flex justify-between items-center px-6 pt-6">
+      <h2 id="view-modal-title" class="text-gray-900 font-semibold text-lg leading-6">Invoice Details</h2>
+      <button aria-label="Close modal" onclick="closeViewInvoiceModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
 
-    <h3>Total: $<span id="viewInvoiceTotal"></span></h3>
+    <!-- Body -->
+    <div class="px-6 pb-8 space-y-6">
+      <!-- Meta Info -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Invoice #</label>
+          <input type="text" id="viewInvoiceNumber" readonly class="block w-full rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-900">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Vendor</label>
+          <input type="text" id="viewInvoiceVendor" readonly class="block w-full rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-900">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Date</label>
+          <input type="text" id="viewInvoiceDate" readonly class="block w-full rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-900">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
+          <input type="text" id="viewInvoiceStatus" readonly class="block w-full rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-900">
+        </div>
+      </div>
 
-    <button type="button" onclick="closeViewInvoiceModal()">Close</button>
+      <!-- Items -->
+      <div>
+        <h3 class="text-sm font-medium text-gray-900 mb-2">Invoice Items</h3>
+        <div id="viewInvoiceItems" class="space-y-3"></div>
+      </div>
+
+      <!-- Total -->
+      <div class="bg-gray-50 rounded-md px-6 py-3 flex justify-between items-center">
+        <span class="font-semibold text-gray-900 text-lg">Total:</span>
+        <span class="font-semibold text-gray-900 text-lg">$<span id="viewInvoiceTotal"></span></span>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex justify-end space-x-3">
+        <button type="button" onclick="closeViewInvoiceModal()" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 function openViewInvoiceModal(data){
-  document.getElementById('viewInvoiceModal').style.display='block';
-  document.getElementById('viewInvoiceNumber').innerText=data.invoice_number;
-  document.getElementById('viewInvoiceVendor').innerText=data.vendor_name;
-  document.getElementById('viewInvoiceDate').innerText=data.invoice_date;
-  document.getElementById('viewInvoiceStatus').innerText=data.status;
-  document.getElementById('viewInvoiceTotal').innerText=data.total;
+  const modal = document.getElementById('viewInvoiceModal');
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
 
-  let tbody=document.getElementById('viewInvoiceItems');
-  tbody.innerHTML="";
+  document.getElementById('viewInvoiceNumber').value = data.invoice_number;
+  document.getElementById('viewInvoiceVendor').value = data.vendor_name;
+  document.getElementById('viewInvoiceDate').value = data.invoice_date;
+  document.getElementById('viewInvoiceStatus').value = data.status;
+  document.getElementById('viewInvoiceTotal').innerText = data.total;
+
+  let container = document.getElementById('viewInvoiceItems');
+  container.innerHTML = "";
   if(data.items){
-    data.items.forEach(it=>{
-      let row=document.createElement("tr");
-      row.innerHTML=`<td>${it.product_name}</td>
-                     <td>${it.quantity}</td>
-                     <td>$${it.unit_price}</td>
-                     <td>$${(it.quantity*it.unit_price).toFixed(2)}</td>`;
-      tbody.appendChild(row);
+    data.items.forEach(it => {
+      let row = document.createElement('div');
+      row.classList.add('grid','grid-cols-12','gap-3','items-center','rounded-md','border','border-gray-200','bg-white','px-4','py-3');
+      row.innerHTML = `
+        <div class="col-span-5 text-sm text-gray-900">${it.product_name}</div>
+        <div class="col-span-2 text-sm text-gray-900">${it.quantity}</div>
+        <div class="col-span-2 text-sm text-gray-900">$${it.unit_price}</div>
+        <div class="col-span-3 text-sm text-gray-900 font-medium">$${(it.quantity*it.unit_price).toFixed(2)}</div>
+      `;
+      container.appendChild(row);
     });
   }
 }
 
 function closeViewInvoiceModal(){
-  document.getElementById('viewInvoiceModal').style.display='none';
+  const modal = document.getElementById('viewInvoiceModal');
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
 }
 </script>
