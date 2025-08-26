@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, jsonify
 from db import get_db
 
-bp = Blueprint("dashboard", __name__)
+bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
-@bp.route("/dashboard")
+@bp.route("/")
 def dashboard():
     db = get_db()
     cursor = db.cursor(dictionary=True)

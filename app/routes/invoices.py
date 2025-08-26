@@ -118,3 +118,12 @@ def delete_invoice(invoice_id):
     return redirect(url_for("invoices.list_invoices"))
 
 
+@bp.route("/new", methods=["GET"])
+def new_invoice():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT id, name FROM vendors ORDER BY name")
+    vendors = cursor.fetchall()
+    cursor.execute("SELECT id, name, default_price FROM products ORDER BY name")
+    products = cursor.fetchall()
+    return render_template("invoice_form.html", vendors=vendors, products=products)

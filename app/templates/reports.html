@@ -92,7 +92,7 @@
         <th class="py-2 px-3">Amount</th>
       </tr>
     </thead>
-    <tbody class="text-[12px] text-slate-900">
+    <tbody id="reports-tbody" class="text-[12px] text-slate-900">
       {% for inv in invoices %}
       <tr class="border-b border-slate-100 transition duration-100 ease-in-out hover:bg-indigo-10 hover:-translate-y-1 hover:shadow-md">
         <td class="py-3 px-3 font-semibold">{{ inv.invoice_number }}</td>
@@ -108,6 +108,12 @@
     </tbody>
   </table>
 </section>
+
+<div id="pagination" class="flex justify-center items-center gap-2 mt-6">
+  <button onclick="prevPage()" disabled class="px-4 py-2 border border-gray-300 rounded-md text-sm">Previous</button>
+  <span id="page-info">Page 1 of 1</span>
+  <button onclick="nextPage()" disabled class="px-4 py-2 border border-gray-300 rounded-md text-sm">Next</button>
+</div>
 
 <script>
 function applyHighlight(btn) {
@@ -133,9 +139,41 @@ document.querySelectorAll('#quick-filters .filter-btn').forEach(btn => {
 window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const range = params.get('range');
-  if (!range) return;
-  const active = document.querySelector(`[data-range="${range}"]`);
-  if (active) applyHighlight(active);
+  if (range) {
+    const active = document.querySelector(`[data-range="${range}"]`);
+    if (active) applyHighlight(active);
+  }
+
+  const rows = document.querySelectorAll('#reports-tbody tr');
+  const perPage = 10;
+  let currentPage = 1;
+
+  function showPage(page) {
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    rows.forEach((r, i) => {
+      r.style.display = (i >= start && i < end) ? '' : 'none';
+    });
+    document.getElementById('page-info').textContent = `Page ${page} of ${Math.ceil(rows.length / perPage)}`;
+    document.querySelector('button[onclick="prevPage()"]').disabled = page === 1;
+    document.querySelector('button[onclick="nextPage()"]').disabled = page >= Math.ceil(rows.length / perPage);
+  }
+
+  window.prevPage = function() {
+    if (currentPage > 1) {
+      currentPage--;
+      showPage(currentPage);
+    }
+  };
+
+  window.nextPage = function() {
+    if (currentPage < Math.ceil(rows.length / perPage)) {
+      currentPage++;
+      showPage(currentPage);
+    }
+  };
+
+  showPage(1);
 });
 </script>
 
