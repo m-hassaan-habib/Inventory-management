@@ -8,9 +8,10 @@ def list_invoices():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
+    # fetch invoices
     cursor.execute("""
         SELECT i.id, i.invoice_number, i.invoice_date, i.status,
-               v.name AS vendor_name,
+               v.name AS vendor_name, v.id AS vendor_id,
                SUM(ii.quantity * ii.unit_price) AS total
         FROM invoices i
         JOIN vendors v ON i.vendor_id = v.id
@@ -20,7 +21,7 @@ def list_invoices():
     """)
     invoices = cursor.fetchall()
 
-    # attach items per invoice
+    # attach items to each invoice
     for inv in invoices:
         cursor.execute("""
             SELECT p.name AS product_name, ii.product_id, ii.quantity, ii.unit_price
@@ -30,7 +31,18 @@ def list_invoices():
         """, (inv["id"],))
         inv["items"] = cursor.fetchall()
 
-    return render_template("invoices.html", invoices=invoices)
+    # fetch vendors for dropdown
+    cursor.execute("SELECT id, name FROM vendors ORDER BY name")
+    vendors = cursor.fetchall()
+
+    # fetch products for dropdown (include price)
+    cursor.execute("SELECT id, name, default_price FROM products ORDER BY name")
+    products = cursor.fetchall()
+
+    return render_template("invoices.html",
+                           invoices=invoices,
+                           vendors=vendors,
+                           products=products)
 
 
 @bp.route("/add", methods=["POST"])
@@ -41,14 +53,16 @@ def add_invoice():
     status = data.get("status")
 
     db = get_db()
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT COUNT(*)+1 FROM invoices")
-    next_id = cursor.fetchone()[0]
+    cursor.execute("SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM invoices")
+    next_id = cursor.fetchone()["next_id"]
     invoice_number = f"INV-{next_id:03d}"
 
-    cursor.execute("INSERT INTO invoices (invoice_number, vendor_id, invoice_date, status) VALUES (%s,%s,%s,%s)",
-                   (invoice_number, vendor_id, invoice_date, status))
+    cursor.execute(
+        "INSERT INTO invoices (invoice_number, vendor_id, invoice_date, status) VALUES (%s,%s,%s,%s)",
+        (invoice_number, vendor_id, invoice_date, status),
+    )
     invoice_id = cursor.lastrowid
 
     product_ids = request.form.getlist("product_id")
@@ -56,8 +70,10 @@ def add_invoice():
     prices = request.form.getlist("unit_price")
 
     for pid, qty, price in zip(product_ids, quantities, prices):
-        cursor.execute("INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (%s,%s,%s,%s)",
-                       (invoice_id, pid, qty, price))
+        cursor.execute(
+            "INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (%s,%s,%s,%s)",
+            (invoice_id, pid, qty, price),
+        )
 
     db.commit()
     return redirect(url_for("invoices.list_invoices"))
