@@ -14,7 +14,7 @@ def reports():
 
     query = """
         SELECT i.id, i.invoice_number, i.invoice_date, i.status,
-               v.name AS vendor_name,
+               v.id AS vendor_id, v.name AS vendor_name,
                SUM(ii.quantity * ii.unit_price) AS total,
                SUM(ii.quantity) AS items
         FROM invoices i
@@ -34,10 +34,15 @@ def reports():
     cursor.execute(query, params)
     invoices = cursor.fetchall()
 
+    # summary
     summary = {
         "total_invoices": len(invoices),
         "total_revenue": sum(x["total"] for x in invoices),
         "total_items": sum(x["items"] for x in invoices)
     }
 
-    return render_template("reports.html", invoices=invoices, summary=summary)
+    # fetch vendors for dropdown
+    cursor.execute("SELECT id, name FROM vendors ORDER BY name")
+    vendors = cursor.fetchall()
+
+    return render_template("reports.html", invoices=invoices, summary=summary, vendors=vendors)

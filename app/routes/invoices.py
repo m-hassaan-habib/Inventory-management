@@ -53,14 +53,16 @@ def add_invoice():
     status = data.get("status")
 
     db = get_db()
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT COUNT(*)+1 FROM invoices")
-    next_id = cursor.fetchone()[0]
+    cursor.execute("SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM invoices")
+    next_id = cursor.fetchone()["next_id"]
     invoice_number = f"INV-{next_id:03d}"
 
-    cursor.execute("INSERT INTO invoices (invoice_number, vendor_id, invoice_date, status) VALUES (%s,%s,%s,%s)",
-                   (invoice_number, vendor_id, invoice_date, status))
+    cursor.execute(
+        "INSERT INTO invoices (invoice_number, vendor_id, invoice_date, status) VALUES (%s,%s,%s,%s)",
+        (invoice_number, vendor_id, invoice_date, status),
+    )
     invoice_id = cursor.lastrowid
 
     product_ids = request.form.getlist("product_id")
@@ -68,8 +70,10 @@ def add_invoice():
     prices = request.form.getlist("unit_price")
 
     for pid, qty, price in zip(product_ids, quantities, prices):
-        cursor.execute("INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (%s,%s,%s,%s)",
-                       (invoice_id, pid, qty, price))
+        cursor.execute(
+            "INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (%s,%s,%s,%s)",
+            (invoice_id, pid, qty, price),
+        )
 
     db.commit()
     return redirect(url_for("invoices.list_invoices"))

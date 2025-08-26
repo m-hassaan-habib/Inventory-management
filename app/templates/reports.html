@@ -3,10 +3,15 @@
 <h1>Reports</h1>
 <div class="filters">
   <form method="get">
-    From <input type="date" name="from">
-    To <input type="date" name="to">
+    From <input type="date" name="from" value="{{ request.args.get('from','') }}">
+    To <input type="date" name="to" value="{{ request.args.get('to','') }}">
     <select name="vendor_id">
       <option value="">All Vendors</option>
+      {% for v in vendors %}
+        <option value="{{ v.id }}" {% if request.args.get('vendor_id') == v.id|string %}selected{% endif %}>
+          {{ v.name }}
+        </option>
+      {% endfor %}
     </select>
     <button type="submit">Filter</button>
   </form>
