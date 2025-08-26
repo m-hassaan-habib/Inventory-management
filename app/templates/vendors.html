@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header">
+  <h1>Vendors</h1>
+  <button onclick="openVendorModal()">+ Add Vendor</button>
+</div>
+
+<table class="table">
+  <tr><th>Name</th><th>Contact</th><th>Address</th><th>Invoices</th><th>Total Amount</th><th>Actions</th></tr>
+  {% for v in vendors %}
+  <tr>
+    <td>{{ v.name }}</td>
+    <td>
+      {% if v.phones %} {{ v.phones }} <br> {% endif %}
+      {% if v.email %} {{ v.email }} {% endif %}
+    </td>
+    <td>{{ v.address }}</td>
+    <td>{{ v.invoice_count }}</td>
+    <td>${{ v.total_amount }}</td>
+    <td>
+      <button>Edit</button>
+      <button>Delete</button>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% include "modals/add_vendor.html" %}
+{% endblock %}

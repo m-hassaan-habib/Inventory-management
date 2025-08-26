@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard">
+  <h1>Welcome to InvoiceFlow</h1>
+  <div class="cards">
+    <div class="card">Total Revenue: ${{ total_revenue }}</div>
+    <div class="card">Total Invoices: {{ total_invoices }}</div>
+    <div class="card">Active Vendors: {{ total_vendors }}</div>
+    <div class="card">Products: {{ total_products }}</div>
+  </div>
+
+  <h2>Recent Invoices</h2>
+  <table>
+    <tr><th>Invoice</th><th>Vendor</th><th>Status</th><th>Total</th></tr>
+    {% for inv in recent_invoices %}
+      <tr>
+        <td>{{ inv.invoice_number }}</td>
+        <td>{{ inv.vendor_name }}</td>
+        <td>{{ inv.status }}</td>
+        <td>${{ inv.total }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

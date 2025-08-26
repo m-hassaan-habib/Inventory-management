@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header">
+  <h1>Invoices</h1>
+  <button onclick="openInvoiceModal()">+ Create Invoice</button>
+</div>
+
+<table class="table">
+  <tr><th>Invoice #</th><th>Vendor</th><th>Date</th><th>Status</th><th>Amount</th><th>Actions</th></tr>
+  {% for inv in invoices %}
+  <tr>
+    <td>{{ inv.invoice_number }}</td>
+    <td>{{ inv.vendor_name }}</td>
+    <td>{{ inv.invoice_date }}</td>
+    <td><span class="badge {{ inv.status|lower }}">{{ inv.status }}</span></td>
+    <td>${{ inv.total }}</td>
+    <td>
+      <button>👁</button>
+      <button>Edit</button>
+      <button>Delete</button>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% include "modals/add_invoice.html" %}
+{% endblock %}
