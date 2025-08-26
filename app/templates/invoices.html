@@ -1,27 +1,109 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="header">
-  <h1>Invoices</h1>
-  <button onclick="openInvoiceModal()">+ Create Invoice</button>
+<!-- Title and create button -->
+<div class="flex justify-between items-center mb-4">
+  <div>
+    <h2 class="text-indigo-900 font-extrabold text-2xl flex items-center gap-2">
+      <i class="fas fa-file-alt text-indigo-900"></i> Invoices
+    </h2>
+    <p class="text-indigo-600 text-sm">Create and manage invoices</p>
+  </div>
+  <button type="button" onclick="openInvoiceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-md px-4 py-2 flex items-center gap-2">
+    <i class="fas fa-plus"></i> Create Invoice
+  </button>
 </div>
 
-<table class="table">
-  <tr><th>Invoice #</th><th>Vendor</th><th>Date</th><th>Status</th><th>Amount</th><th>Actions</th></tr>
-  {% for inv in invoices %}
-  <tr>
-    <td>{{ inv.invoice_number }}</td>
-    <td>{{ inv.vendor_name }}</td>
-    <td>{{ inv.invoice_date }}</td>
-    <td><span class="badge {{ inv.status|lower }}">{{ inv.status }}</span></td>
-    <td>${{ inv.total }}</td>
-    <td>
-      <button onclick='openViewInvoiceModal({{ inv|tojson }})'>👁</button>
-      <button onclick='openInvoiceModal(true, {{ inv|tojson }})'>Edit</button>
-      <button onclick='openDeleteInvoiceModal({{ inv.id }})'>Delete</button>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+<!-- Search and filter -->
+<form class="flex gap-4 mb-6 max-w-full">
+  <label for="search" class="sr-only">Search invoices</label>
+  <input id="search" type="search" placeholder="Search invoices..." class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+  <select aria-label="Filter by status" class="border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+    <option>All Status</option>
+    <option>Paid</option>
+    <option>Pending</option>
+    <option>Overdue</option>
+  </select>
+</form>
+
+<!-- Table container -->
+<section class="flex-1 overflow-auto">
+  <h3 class="text-gray-900 font-bold text-lg mb-4">All Invoices ({{ invoices|length }})</h3>
+  <table class="w-full border-collapse rounded-lg border border-gray-100 overflow-hidden">
+    <thead class="bg-white border-b border-gray-100">
+      <tr class="text-xs text-gray-500 text-left">
+        <th class="py-3 px-4 font-normal">Invoice #</th>
+        <th class="py-3 px-4 font-normal">Vendor</th>
+        <th class="py-3 px-4 font-normal">Date</th>
+        <th class="py-3 px-4 font-normal">Status</th>
+        <th class="py-3 px-4 font-normal">Amount</th>
+        <th class="py-3 px-4 font-normal">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="invoices-tbody" class="bg-white divide-y divide-gray-100 text-sm text-gray-900">
+      {% for inv in invoices %}
+      <tr>
+        <td class="py-4 px-4 font-semibold">{{ inv.invoice_number }}</td>
+        <td class="py-4 px-4">{{ inv.vendor_name }}</td>
+        <td class="py-4 px-4">{{ inv.invoice_date }}</td>
+        <td class="py-4 px-4">
+          <span class="inline-block {% if inv.status|lower == 'paid' %}bg-green-100 text-green-700{% elif inv.status|lower == 'pending' %}bg-orange-100 text-orange-700{% elif inv.status|lower == 'overdue' %}bg-red-100 text-red-700{% endif %} text-xs font-semibold px-2 py-0.5 rounded-full select-none">{{ inv.status }}</span>
+        </td>
+        <td class="py-4 px-4 font-semibold">${{ inv.total }}</td>
+        <td class="py-4 px-4 flex gap-2">
+          <button aria-label="View invoice {{ inv.invoice_number }}" onclick='openViewInvoiceModal({{ inv|tojson }})' class="w-9 h-9 rounded-md border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 flex items-center justify-center">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button aria-label="Edit invoice {{ inv.invoice_number }}" onclick='openInvoiceModal(true, {{ inv|tojson }})' class="w-9 h-9 rounded-md border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 flex items-center justify-center">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button aria-label="Delete invoice {{ inv.invoice_number }}" onclick='openDeleteInvoiceModal({{ inv.id }})' class="w-9 h-9 rounded-md border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 flex items-center justify-center">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<div id="pagination" class="flex justify-center items-center gap-2 mt-6">
+  <button onclick="prevPage()" disabled class="px-4 py-2 border border-gray-300 rounded-md text-sm">Previous</button>
+  <span id="page-info">Page 1 of 1</span>
+  <button onclick="nextPage()" disabled class="px-4 py-2 border border-gray-300 rounded-md text-sm">Next</button>
+</div>
+
+<script>
+const rows = document.querySelectorAll('#invoices-tbody tr');
+const perPage = 10;
+let currentPage = 1;
+
+function showPage(page) {
+  const start = (page - 1) * perPage;
+  const end = start + perPage;
+  rows.forEach((r, i) => {
+    r.style.display = (i >= start && i < end) ? '' : 'none';
+  });
+  document.getElementById('page-info').textContent = `Page ${page} of ${Math.ceil(rows.length / perPage)}`;
+  document.querySelector('button[onclick="prevPage()"]').disabled = page === 1;
+  document.querySelector('button[onclick="nextPage()"]').disabled = page >= Math.ceil(rows.length / perPage);
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    showPage(currentPage);
+  }
+}
+
+function nextPage() {
+  if (currentPage < Math.ceil(rows.length / perPage)) {
+    currentPage++;
+    showPage(currentPage);
+  }
+}
+
+showPage(1);
+</script>
 
 {% include "modals/add_invoice.html" %}
 {% include "modals/delete_invoice.html" %}
