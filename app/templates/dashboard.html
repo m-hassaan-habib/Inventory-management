@@ -1,90 +1,212 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="p-6 md:p-8 space-y-6">
-  <!-- Stat Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="bg-white rounded-2xl p-6 shadow-md text-center">
-      <h5 class="text-gray-500 text-sm font-medium">Revenue</h5>
-      <h3 class="text-gray-900 text-2xl font-bold mt-2">${{ total_revenue }}</h3>
-    </div>
-    <div class="bg-white rounded-2xl p-6 shadow-md text-center">
-      <h5 class="text-gray-500 text-sm font-medium">Invoices</h5>
-      <h3 class="text-gray-900 text-2xl font-bold mt-2">{{ total_invoices }}</h3>
-    </div>
-    <div class="bg-white rounded-2xl p-6 shadow-md text-center">
-      <h5 class="text-gray-500 text-sm font-medium">Vendors</h5>
-      <h3 class="text-gray-900 text-2xl font-bold mt-2">{{ total_vendors }}</h3>
-    </div>
-    <div class="bg-white rounded-2xl p-6 shadow-md text-center">
-      <h5 class="text-gray-500 text-sm font-medium">Products</h5>
-      <h3 class="text-gray-900 text-2xl font-bold mt-2">{{ total_products }}</h3>
-    </div>
-  </div>
+<div class="flex-1 overflow-y-auto p-6">
 
-  <!-- Charts Row -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white rounded-2xl p-6 shadow-md">
-      <h5 class="text-gray-900 text-lg font-semibold mb-4">Revenue by Month</h5>
-      <canvas id="revenueChart"></canvas>
+  <!-- Stats cards with animations -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow duration-100 transform hover:-translate-y-2">
+      <p class="text-xs text-gray-500 mb-1">Total Revenue</p>
+      <div class="flex items-center justify-between">
+        <span class="font-extrabold text-lg text-gray-900">${{ total_revenue }}</span>
+        <i class="fas fa-dollar-sign text-green-500 text-sm"></i>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">+20.1% from last month</p>
     </div>
-    <div class="bg-white rounded-2xl p-6 shadow-md">
-      <h5 class="text-gray-900 text-lg font-semibold mb-4">Invoices by Status</h5>
-      <canvas id="statusChart"></canvas>
+    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow duration-100 transform hover:-translate-y-2">
+      <p class="text-xs text-gray-500 mb-1">Total Invoices</p>
+      <div class="flex items-center justify-between">
+        <span class="font-extrabold text-lg text-gray-900">{{ total_invoices }}</span>
+        <i class="fas fa-file-alt text-indigo-600 text-sm"></i>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">+12% from last month</p>
     </div>
-  </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow duration-100 transform hover:-translate-y-2">
+      <p class="text-xs text-gray-500 mb-1">Active Vendors</p>
+      <div class="flex items-center justify-between">
+        <span class="font-extrabold text-lg text-gray-900">{{ total_vendors }}</span>
+        <i class="fas fa-building text-yellow-400 text-sm"></i>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">+4 new this month</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow duration-100 transform hover:-translate-y-2">
+      <p class="text-xs text-gray-500 mb-1">Products</p>
+      <div class="flex items-center justify-between">
+        <span class="font-extrabold text-lg text-gray-900">{{ total_products }}</span>
+        <i class="fas fa-cube text-green-500 text-sm"></i>
+      </div>
+      <p class="text-xs text-gray-400 mt-1">+8 added this month</p>
+    </div>
+  </section>
 
-  <!-- Recent Invoices -->
-  <div class="bg-white rounded-2xl p-6 shadow-md">
-    <h5 class="text-gray-900 text-lg font-semibold mb-4">Recent Invoices</h5>
-    <div class="overflow-x-auto">
-      <table class="w-full border border-gray-200 rounded-xl text-left">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="text-blue-900 font-medium text-base px-6 py-4">Invoice</th>
-            <th class="text-blue-900 font-medium text-base px-6 py-4">Vendor</th>
-            <th class="text-blue-900 font-medium text-base px-6 py-4">Status</th>
-            <th class="text-blue-900 font-medium text-base px-6 py-4">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for inv in recent_invoices %}
-          <tr>
-            <td class="text-black text-lg font-normal px-6 py-5">{{ inv.invoice_number }}</td>
-            <td class="text-black text-lg font-normal px-6 py-5">{{ inv.vendor_name }}</td>
-            <td class="text-black text-lg font-normal px-6 py-5"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium {{ 'bg-green-100 text-green-800' if inv.status=='Paid' else 'bg-yellow-100 text-yellow-800' if inv.status=='Pending' else 'bg-red-100 text-red-800' }}">{{ inv.status }}</span></td>
-            <td class="text-black text-lg font-normal px-6 py-5">${{ inv.total }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+<!-- Charts section -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-100">
+      <h3 class="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
+        <i class="fas fa-chart-bar text-indigo-600"></i>
+        Revenue Overview
+      </h3>
+      <div class="h-48">  <!-- fixed height wrapper -->
+        <canvas id="revenueChart"></canvas>
+      </div>
     </div>
-  </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-100">
+      <h3 class="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
+        <i class="fas fa-chart-pie text-indigo-600"></i>
+        Invoice Status Distribution
+      </h3>
+      <div class="h-48"> <!-- fixed height wrapper -->
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Recent Invoices + Quick Actions -->
+  <section class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 gap-6 mb-6">
+    <!-- Recent Invoices -->
+    <div class="md:col-span-2 bg-white border border-gray-200 rounded-lg p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow duration-100">
+      <h3 class="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
+        <i class="fas fa-file-alt text-indigo-600"></i>
+        Recent Invoices
+      </h3>
+      <div class="flex flex-col space-y-4 text-xs text-gray-700">
+        {% for inv in recent_invoices %}
+        <div class="flex justify-between items-center p-2 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors duration-100">
+          <div>
+            <p class="font-semibold text-sm text-gray-900 leading-tight">{{ inv.invoice_number }}</p>
+            <p class="text-xs text-gray-500">{{ inv.vendor_name }}</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <p class="font-semibold text-sm text-gray-900">${{ inv.total }}</p>
+            <span class="{% if inv.status == 'Paid' %}bg-green-100 text-green-600{% elif inv.status == 'Pending' %}bg-yellow-100 text-yellow-600{% else %}bg-red-100 text-red-600{% endif %} text-[9px] font-semibold px-2 py-0.5 rounded-full select-none">
+              {{ inv.status|lower }}
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow duration-100">
+      <h3 class="font-semibold text-gray-900 text-lg mb-4 flex items-center gap-2">
+        <i class="fas fa-chart-line text-indigo-600"></i>
+        Quick Actions
+      </h3>
+      <div class="flex flex-col space-y-3">
+        <button onclick="openVendorModal()" class="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50 transition-colors duration-100 transform hover:scale-[1.02]" type="button">
+          <div class="w-8 h-8 rounded-md bg-green-100 text-green-600 flex items-center justify-center">
+            <i class="fas fa-building text-sm"></i>
+          </div>
+          <div class="text-xs">
+            <p class="font-semibold text-gray-900 leading-tight">Add New Vendor</p>
+            <p class="text-gray-500">Register a new vendor</p>
+          </div>
+        </button>
+        <button onclick="openProductModal()" class="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50 transition-colors duration-100 transform hover:scale-[1.02]" type="button">
+          <div class="w-8 h-8 rounded-md bg-yellow-100 text-yellow-600 flex items-center justify-center">
+            <i class="fas fa-cube text-sm"></i>
+          </div>
+          <div class="text-xs">
+            <p class="font-semibold text-gray-900 leading-tight">Add New Product</p>
+            <p class="text-gray-500">Add a product to catalog</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
 </div>
 
+{% include "modals/add_vendor.html" %}
+{% include "modals/add_product.html" %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const revenueChart = new Chart(document.getElementById('revenueChart'), {
-  type: 'bar',
+const palette = ["#756ceb", "#aba5f3", "#cfcaf8", "#f0eefe", "#f8f6ff"];
+
+// Revenue Chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+
+// Create gradient
+const gradient = revenueCtx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, "rgba(99, 89, 232, 0.795)");
+gradient.addColorStop(1, "rgba(248, 246, 255, 0)");
+
+const revenueChart = new Chart(revenueCtx, {
+  type: 'line',
   data: {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
     datasets: [{
-      label: "Revenue",
-      data: [1200, 1500, 1800, 2000, 1700, 2100],
-      backgroundColor: "rgba(54,162,235,0.7)"
+      label: 'Revenue',
+      data: [12000, 19000, 15000, 22000, 18000, 24000, 20000],
+      borderColor: '#6359e8',
+      backgroundColor: gradient, 
+      fill: true,
+      tension: 0.5,
+      pointRadius: 3,
+      pointBackgroundColor: '#f0eefe'
     }]
   },
-  options: { responsive: true, maintainAspectRatio: false }
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#6359e8',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: { color: '#6b7280', font: { size: 11 } },
+        grid: { color: '#e5e7eb' }
+      },
+      x: {
+        ticks: { color: '#6b7280', font: { size: 11 } },
+        grid: { display: false }
+      }
+    }
+  }
 });
 
-const statusChart = new Chart(document.getElementById('statusChart'), {
-  type: 'pie',
+
+// Status Chart
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+const statusChart = new Chart(statusCtx, {
+  type: 'doughnut',
   data: {
-    labels: ["Paid", "Pending", "Overdue"],
+    labels: ['Paid', 'Pending', 'Overdue'],
     datasets: [{
       data: [10, 5, 2],
-      backgroundColor: ["#28a745", "#ffc107", "#dc3545"]
+      backgroundColor: palette.slice(0, 3),
+      borderWidth: 0,
     }]
   },
-  options: { responsive: true, maintainAspectRatio: false }
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: '#6b7280',
+          font: { size: 11 }
+        }
+      },
+      tooltip: {
+        backgroundColor: '#4f46e5',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+      }
+    }
+  }
 });
+
 </script>
 {% endblock %}

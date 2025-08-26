@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- Reports Title and Export -->
+<!-- Reports Title -->
 <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
   <div>
     <h3 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2">
@@ -9,10 +9,6 @@
     </h3>
     <p class="text-xs text-slate-400 mt-1">Invoice analytics and reporting</p>
   </div>
-  <button type="button" class="mt-4 sm:mt-0 inline-flex items-center space-x-2 border border-slate-300 rounded-md px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-100">
-    <i class="fas fa-download text-sm"></i>
-    <span>Export Report</span>
-  </button>
 </section>
 
 <!-- Report Filters -->
@@ -22,56 +18,59 @@
     <span>Report Filters</span>
   </h4>
 
-  <div class="flex flex-wrap gap-2 text-xs text-slate-700">
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">Today</span>
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">Last 7 Days</span>
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">Last 15 Days</span>
-    <span class="px-2 py-1 rounded-md bg-indigo-600 text-white cursor-pointer">Last 30 Days</span>
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">This Month</span>
-    <span class="px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-slate-100">This Year</span>
+  <div class="flex flex-wrap gap-2 text-xs text-slate-700" id="quick-filters">
+    <span data-range="today" class="filter-btn px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-indigo-600 hover:text-white">Today</span>
+    <span data-range="7" class="filter-btn px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-indigo-600 hover:text-white">Last 7 Days</span>
+    <span data-range="15" class="filter-btn px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-indigo-600 hover:text-white">Last 15 Days</span>
+    <span data-range="30" class="filter-btn px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-indigo-600 hover:text-white">Last 30 Days</span>
+    <span data-range="month" class="filter-btn px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-indigo-600 hover:text-white">This Month</span>
+    <span data-range="year" class="filter-btn px-2 py-1 rounded-md border border-slate-300 cursor-pointer hover:bg-indigo-600 hover:text-white">This Year</span>
   </div>
 
-  <form method="get" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-700">
+  <form method="get" id="report-filters" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-700">
     <label class="flex flex-col space-y-1">
       <span>From Date</span>
-      <div class="relative">
-        <input type="date" name="from" value="{{ request.args.get('from','') }}" class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400">
-      </div>
+      <input type="date" name="from" value="{{ request.args.get('from','') }}"
+             class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900"
+             onchange="this.form.submit()">
     </label>
     <label class="flex flex-col space-y-1">
       <span>To Date</span>
-      <div class="relative">
-        <input type="date" name="to" value="{{ request.args.get('to','') }}" class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400">
-      </div>
+      <input type="date" name="to" value="{{ request.args.get('to','') }}"
+             class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900"
+             onchange="this.form.submit()">
     </label>
     <label class="flex flex-col space-y-1">
       <span>Vendor</span>
-      <select name="vendor_id" class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900">
+      <select name="vendor_id"
+              class="w-full rounded-md border border-slate-300 px-3 py-2 text-xs text-slate-900"
+              onchange="this.form.submit()">
         <option value="" {% if not request.args.get('vendor_id') %}selected{% endif %}>All Vendors</option>
         {% for v in vendors %}
-          <option value="{{ v.id }}" {% if request.args.get('vendor_id') == v.id|string %}selected{% endif %}>{{ v.name }}</option>
+          <option value="{{ v.id }}" {% if request.args.get('vendor_id') == v.id|string %}selected{% endif %}>
+            {{ v.name }}
+          </option>
         {% endfor %}
       </select>
     </label>
-    <button type="submit" class="col-span-1 sm:col-span-3 inline-flex items-center justify-center space-x-2 border border-indigo-600 bg-indigo-600 rounded-md px-3 py-1.5 text-xs text-white hover:bg-indigo-700">Filter</button>
   </form>
 </section>
 
 <!-- Summary Cards -->
 <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative">
+  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative transition transform hover:scale-[1.02] hover:shadow-lg hover:border-indigo-200 duration-100">
     <span class="block mb-2">Total Invoices</span>
     <p class="font-bold text-slate-900 text-lg mb-1">{{ summary.total_invoices }}</p>
     <p class="text-[10px] text-slate-400">In selected period</p>
     <i class="fas fa-file-invoice-dollar absolute top-4 right-4 text-slate-300 text-xs"></i>
   </div>
-  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative">
+  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative transition transform hover:scale-[1.02] hover:shadow-lg hover:border-indigo-200 duration-100">
     <span class="block mb-2">Total Revenue</span>
     <p class="font-bold text-green-600 text-lg mb-1">${{ summary.total_revenue }}</p>
     <p class="text-[10px] text-slate-400">Gross revenue generated</p>
     <span class="absolute top-4 right-4 text-green-500 text-xs">$</span>
   </div>
-  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative">
+  <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative transition transform hover:scale-[1.02] hover:shadow-lg hover:border-indigo-200 duration-100">
     <span class="block mb-2">Total Items Sold</span>
     <p class="font-bold text-orange-500 text-lg mb-1">{{ summary.total_items }}</p>
     <p class="text-[10px] text-slate-400">Total quantity across all invoices</p>
@@ -80,7 +79,7 @@
 </section>
 
 <!-- Invoice Details Table -->
-<section class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 overflow-x-auto">
+<section class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 overflow-x-auto mt-6">
   <h4 class="font-semibold text-slate-900 mb-4">Invoice Details ({{ invoices|length }} invoices)</h4>
   <table class="w-full border-collapse min-w-[600px]">
     <thead>
@@ -93,9 +92,9 @@
         <th class="py-2 px-3">Amount</th>
       </tr>
     </thead>
-    <tbody class="text-[12px] text-slate-900">
+    <tbody id="reports-tbody" class="text-[12px] text-slate-900">
       {% for inv in invoices %}
-      <tr class="border-b border-slate-100">
+      <tr class="border-b border-slate-100 transition duration-100 ease-in-out hover:bg-indigo-10 hover:-translate-y-1 hover:shadow-md">
         <td class="py-3 px-3 font-semibold">{{ inv.invoice_number }}</td>
         <td class="py-3 px-3">{{ inv.vendor_name }}</td>
         <td class="py-3 px-3">{{ inv.invoice_date }}</td>
@@ -109,4 +108,73 @@
     </tbody>
   </table>
 </section>
+
+<div id="pagination" class="flex justify-center items-center gap-2 mt-6">
+  <button onclick="prevPage()" disabled class="px-4 py-2 border border-gray-300 rounded-md text-sm">Previous</button>
+  <span id="page-info">Page 1 of 1</span>
+  <button onclick="nextPage()" disabled class="px-4 py-2 border border-gray-300 rounded-md text-sm">Next</button>
+</div>
+
+<script>
+function applyHighlight(btn) {
+  document.querySelectorAll('#quick-filters .filter-btn').forEach(el => {
+    el.classList.remove('bg-indigo-600','text-white');
+    el.classList.add('border','border-slate-300','text-slate-700');
+  });
+  btn.classList.add('bg-indigo-600','text-white');
+  btn.classList.remove('border','border-slate-300','text-slate-700');
+}
+
+document.querySelectorAll('#quick-filters .filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const range = btn.getAttribute('data-range');
+    const url = new URL(window.location.href);
+    url.searchParams.set('range', range);
+    url.searchParams.delete('from'); 
+    url.searchParams.delete('to');
+    window.location.href = url.toString();
+  });
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const range = params.get('range');
+  if (range) {
+    const active = document.querySelector(`[data-range="${range}"]`);
+    if (active) applyHighlight(active);
+  }
+
+  const rows = document.querySelectorAll('#reports-tbody tr');
+  const perPage = 10;
+  let currentPage = 1;
+
+  function showPage(page) {
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    rows.forEach((r, i) => {
+      r.style.display = (i >= start && i < end) ? '' : 'none';
+    });
+    document.getElementById('page-info').textContent = `Page ${page} of ${Math.ceil(rows.length / perPage)}`;
+    document.querySelector('button[onclick="prevPage()"]').disabled = page === 1;
+    document.querySelector('button[onclick="nextPage()"]').disabled = page >= Math.ceil(rows.length / perPage);
+  }
+
+  window.prevPage = function() {
+    if (currentPage > 1) {
+      currentPage--;
+      showPage(currentPage);
+    }
+  };
+
+  window.nextPage = function() {
+    if (currentPage < Math.ceil(rows.length / perPage)) {
+      currentPage++;
+      showPage(currentPage);
+    }
+  };
+
+  showPage(1);
+});
+</script>
+
 {% endblock %}

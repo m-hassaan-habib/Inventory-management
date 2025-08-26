@@ -25,7 +25,7 @@
 
   <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for p in products %}
-    <article class="bg-white rounded-xl border border-slate-100 p-6 shadow-md shadow-slate-200/50 flex flex-col justify-between">
+    <article class="bg-white rounded-xl border border-slate-200 p-6 shadow-md shadow-slate-200/50 flex flex-col justify-between transform transition duration-300 hover:-translate-y-2 hover:shadow-xl">
       <header class="flex justify-between items-start mb-4">
         <div>
           <h3 class="text-slate-900 font-semibold text-sm leading-tight mb-1">{{ p.name }}</h3>
@@ -38,10 +38,10 @@
           <span class="inline-block bg-slate-100 text-slate-700 text-[10px] font-bold rounded-full px-2 py-0.5">{{ p.usage_count }} invoices</span>
         </div>
         <div class="flex flex-col gap-2">
-          <button type="button" aria-label="Edit {{ p.name }}" onclick='openProductModal(true, {{ p|tojson }})' class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center">
+          <button type="button" aria-label="Edit {{ p.name }}" onclick='openProductModal(true, {{ p|tojson }})' class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center transition duration-200 hover:scale-110">
             <i class="fas fa-edit text-xs"></i>
           </button>
-          <button type="button" aria-label="Delete {{ p.name }}" onclick='openDeleteProductModal({{ p.id }})' class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center">
+          <button type="button" aria-label="Delete {{ p.name }}" onclick='openDeleteProductModal({{ p.id }})' class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center transition duration-200 hover:scale-110">
             <i class="fas fa-trash-alt text-xs"></i>
           </button>
         </div>
@@ -58,37 +58,58 @@
 </section>
 
 <script>
-const products = document.querySelectorAll('#products-grid article');
+const allProducts = Array.from(document.querySelectorAll('#products-grid article'));
 const perPage = 9;
 let currentPage = 1;
+let filteredProducts = [...allProducts]; // start with all
 
-function showPage(page) {
-  const start = (page - 1) * perPage;
-  const end = start + perPage;
-  products.forEach((p, i) => {
-    p.style.display = (i >= start && i < end) ? '' : 'none';
+function filterProducts() {
+  const searchTerm = document.getElementById('search').value.toLowerCase();
+  filteredProducts = allProducts.filter(card => card.innerText.toLowerCase().includes(searchTerm));
+  currentPage = 1;
+  renderProductsPage();
+}
+
+function renderProductsPage() {
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / perPage));
+
+  // hide all
+  allProducts.forEach(p => p.style.display = 'none');
+
+  // show only current page
+  filteredProducts.forEach((p, i) => {
+    if (i >= (currentPage - 1) * perPage && i < currentPage * perPage) {
+      p.style.display = '';
+    }
   });
-  document.getElementById('page-info').textContent = `Page ${page} of ${Math.ceil(products.length / perPage)}`;
-  document.querySelector('button[onclick="prevPage()"]').disabled = page === 1;
-  document.querySelector('button[onclick="nextPage()"]').disabled = page >= Math.ceil(products.length / perPage);
+
+  document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+  document.querySelector('button[onclick="prevPage()"]').disabled = currentPage === 1;
+  document.querySelector('button[onclick="nextPage()"]').disabled = currentPage >= totalPages;
 }
 
 function prevPage() {
   if (currentPage > 1) {
     currentPage--;
-    showPage(currentPage);
+    renderProductsPage();
   }
 }
 
 function nextPage() {
-  if (currentPage < Math.ceil(products.length / perPage)) {
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / perPage));
+  if (currentPage < totalPages) {
     currentPage++;
-    showPage(currentPage);
+    renderProductsPage();
   }
 }
 
-showPage(1);
+// Attach search event
+document.getElementById('search').addEventListener('input', filterProducts);
+
+// Initial render
+renderProductsPage();
 </script>
+
 
 {% include "modals/add_product.html" %}
 {% include "modals/delete_product.html" %}

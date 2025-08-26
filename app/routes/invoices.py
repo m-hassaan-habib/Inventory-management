@@ -8,9 +8,9 @@ def list_invoices():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    # fetch invoices
+    # Fetch invoices
     cursor.execute("""
-        SELECT i.id, i.invoice_number, i.invoice_date, i.status,
+        SELECT i.id, i.invoice_number, DATE_FORMAT(i.invoice_date, '%Y-%m-%d') AS invoice_date, i.status,
                v.name AS vendor_name, v.id AS vendor_id,
                SUM(ii.quantity * ii.unit_price) AS total
         FROM invoices i
@@ -21,21 +21,21 @@ def list_invoices():
     """)
     invoices = cursor.fetchall()
 
-    # attach items to each invoice
+    # Attach items to each invoice
     for inv in invoices:
         cursor.execute("""
             SELECT p.name AS product_name, ii.product_id, ii.quantity, ii.unit_price
             FROM invoice_items ii
-            JOIN products p ON ii.product_id=p.id
-            WHERE ii.invoice_id=%s
+            JOIN products p ON ii.product_id = p.id
+            WHERE ii.invoice_id = %s
         """, (inv["id"],))
         inv["items"] = cursor.fetchall()
 
-    # fetch vendors for dropdown
+    # Fetch vendors for dropdown
     cursor.execute("SELECT id, name FROM vendors ORDER BY name")
     vendors = cursor.fetchall()
 
-    # fetch products for dropdown (include price)
+    # Fetch products for dropdown (include price)
     cursor.execute("SELECT id, name, default_price FROM products ORDER BY name")
     products = cursor.fetchall()
 
@@ -94,10 +94,8 @@ def edit_invoice(invoice_id):
                       WHERE id=%s""",
                    (vendor_id, invoice_date, status, invoice_id))
 
-    # Clear old items
     cursor.execute("DELETE FROM invoice_items WHERE invoice_id=%s", (invoice_id,))
 
-    # Insert new items
     product_ids = request.form.getlist("product_id")
     quantities = request.form.getlist("quantity")
     prices = request.form.getlist("unit_price")
@@ -118,5 +116,4 @@ def delete_invoice(invoice_id):
     cursor.execute("DELETE FROM invoices WHERE id=%s", (invoice_id,))
     db.commit()
     return redirect(url_for("invoices.list_invoices"))
-
 
