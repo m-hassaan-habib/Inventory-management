@@ -1,25 +1,94 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="header">
-  <h1>Products</h1>
-  <button onclick="openProductModal()">+ Add Product</button>
-</div>
-
-<div class="cards">
-  {% for p in products %}
-  <div class="card">
-    <h2>{{ p.name }}</h2>
-    <p>{{ p.type }}</p>
-    <p>Variants: {{ p.variants }}</p>
-    <p class="price">${{ p.default_price }}</p>
-    <small>{{ p.usage_count }} invoices</small>
-    <div class="actions">
-      <button onclick='openProductModal(true, {{ p|tojson }})'>Edit</button>
-      <button onclick='openDeleteProductModal({{ p.id }})'>Delete</button>
+<section class="flex-1 p-6 overflow-auto">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+    <div>
+      <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+        <i class="fas fa-box-open text-indigo-700"></i> Products
+      </h2>
+      <p class="text-sm text-slate-500">Manage your product catalog</p>
     </div>
+    <button type="button" onclick="openProductModal()" class="inline-flex items-center gap-2 rounded-lg bg-indigo-700 px-4 py-2 text-white text-sm font-semibold hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+      <i class="fas fa-plus"></i> Add Product
+    </button>
   </div>
-  {% endfor %}
-</div>
+
+  <form class="mb-6">
+    <label for="search" class="sr-only">Search products</label>
+    <div class="relative">
+      <input id="search" type="search" placeholder="Search products..." class="w-full rounded-lg border border-slate-200 py-3 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600" />
+      <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
+        <i class="fas fa-search"></i>
+      </div>
+    </div>
+  </form>
+
+  <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for p in products %}
+    <article class="bg-white rounded-xl border border-slate-100 p-6 shadow-md shadow-slate-200/50 flex flex-col justify-between">
+      <header class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="text-slate-900 font-semibold text-sm leading-tight mb-1">{{ p.name }}</h3>
+          <span class="inline-block bg-slate-200 text-slate-600 text-[10px] font-semibold rounded-full px-2 py-0.5 mb-2">{{ p.type }}</span>
+          <p class="text-xs text-slate-500 mb-0.5">Variants</p>
+          <p class="text-sm text-slate-900 mb-3">{{ p.variants }}</p>
+          <p class="text-xs text-slate-500 mb-0.5">Default Price</p>
+          <p class="text-sm font-semibold text-green-700 mb-3">${{ p.default_price }}</p>
+          <p class="text-xs text-slate-500 mb-0.5">Usage Count</p>
+          <span class="inline-block bg-slate-100 text-slate-700 text-[10px] font-bold rounded-full px-2 py-0.5">{{ p.usage_count }} invoices</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <button type="button" aria-label="Edit {{ p.name }}" onclick='openProductModal(true, {{ p|tojson }})' class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center">
+            <i class="fas fa-edit text-xs"></i>
+          </button>
+          <button type="button" aria-label="Delete {{ p.name }}" onclick='openDeleteProductModal({{ p.id }})' class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center">
+            <i class="fas fa-trash-alt text-xs"></i>
+          </button>
+        </div>
+      </header>
+    </article>
+    {% endfor %}
+  </div>
+
+  <div id="pagination" class="flex justify-center items-center gap-2 mt-6">
+    <button onclick="prevPage()" disabled class="px-4 py-2 border border-slate-300 rounded-md text-sm">Previous</button>
+    <span id="page-info">Page 1 of 1</span>
+    <button onclick="nextPage()" disabled class="px-4 py-2 border border-slate-300 rounded-md text-sm">Next</button>
+  </div>
+</section>
+
+<script>
+const products = document.querySelectorAll('#products-grid article');
+const perPage = 9;
+let currentPage = 1;
+
+function showPage(page) {
+  const start = (page - 1) * perPage;
+  const end = start + perPage;
+  products.forEach((p, i) => {
+    p.style.display = (i >= start && i < end) ? '' : 'none';
+  });
+  document.getElementById('page-info').textContent = `Page ${page} of ${Math.ceil(products.length / perPage)}`;
+  document.querySelector('button[onclick="prevPage()"]').disabled = page === 1;
+  document.querySelector('button[onclick="nextPage()"]').disabled = page >= Math.ceil(products.length / perPage);
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    showPage(currentPage);
+  }
+}
+
+function nextPage() {
+  if (currentPage < Math.ceil(products.length / perPage)) {
+    currentPage++;
+    showPage(currentPage);
+  }
+}
+
+showPage(1);
+</script>
 
 {% include "modals/add_product.html" %}
 {% include "modals/delete_product.html" %}
