@@ -1,0 +1,20 @@
+<div id="deleteVendorModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>Delete Vendor</h2>
+    <p>Are you sure you want to delete this vendor? This will also remove all related phone numbers and invoices.</p>
+    <form id="deleteVendorForm" method="post">
+      <button type="submit">Yes, Delete</button>
+      <button type="button" onclick="closeDeleteVendorModal()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openDeleteVendorModal(id){
+  document.getElementById("deleteVendorForm").action="/vendors/delete/"+id;
+  document.getElementById("deleteVendorModal").style.display="block";
+}
+function closeDeleteVendorModal(){
+  document.getElementById("deleteVendorModal").style.display="none";
+}
+</script>

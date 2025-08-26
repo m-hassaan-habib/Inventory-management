@@ -31,3 +31,29 @@ def add_product():
                    (name, type_, variants, price))
     db.commit()
     return redirect(url_for("products.list_products"))
+
+@bp.route("/edit/<int:product_id>", methods=["POST"])
+def edit_product(product_id):
+    data = request.form
+    name = data.get("name")
+    type_ = data.get("type")
+    variants = data.get("variants")
+    price = data.get("default_price")
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("""UPDATE products 
+                      SET name=%s, type=%s, variants=%s, default_price=%s 
+                      WHERE id=%s""",
+                   (name, type_, variants, price, product_id))
+    db.commit()
+    return redirect(url_for("products.list_products"))
+
+
+@bp.route("/delete/<int:product_id>", methods=["POST"])
+def delete_product(product_id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM products WHERE id=%s", (product_id,))
+    db.commit()
+    return redirect(url_for("products.list_products"))

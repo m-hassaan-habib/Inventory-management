@@ -13,9 +13,14 @@
     <p>Variants: {{ p.variants }}</p>
     <p class="price">${{ p.default_price }}</p>
     <small>{{ p.usage_count }} invoices</small>
+    <div class="actions">
+      <button onclick='openProductModal(true, {{ p|tojson }})'>Edit</button>
+      <button onclick='openDeleteProductModal({{ p.id }})'>Delete</button>
+    </div>
   </div>
   {% endfor %}
 </div>
 
 {% include "modals/add_product.html" %}
+{% include "modals/delete_product.html" %}
 {% endblock %}

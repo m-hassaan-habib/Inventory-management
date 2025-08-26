@@ -15,13 +15,15 @@
     <td><span class="badge {{ inv.status|lower }}">{{ inv.status }}</span></td>
     <td>${{ inv.total }}</td>
     <td>
-      <button>👁</button>
-      <button>Edit</button>
-      <button>Delete</button>
+      <button onclick='openViewInvoiceModal({{ inv|tojson }})'>👁</button>
+      <button onclick='openInvoiceModal(true, {{ inv|tojson }})'>Edit</button>
+      <button onclick='openDeleteInvoiceModal({{ inv.id }})'>Delete</button>
     </td>
   </tr>
   {% endfor %}
 </table>
 
 {% include "modals/add_invoice.html" %}
+{% include "modals/delete_invoice.html" %}
+{% include "modals/view_invoice.html" %}
 {% endblock %}

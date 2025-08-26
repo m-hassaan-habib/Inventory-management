@@ -18,9 +18,10 @@
     <td>{{ v.invoice_count }}</td>
     <td>${{ v.total_amount }}</td>
     <td>
-      <button>Edit</button>
-      <button>Delete</button>
+      <button onclick='openVendorModal(true, {{ v|tojson }})'>Edit</button>
+      <button onclick='openDeleteVendorModal({{ v.id }})'>Delete</button>
     </td>
+
   </tr>
   {% endfor %}
 </table>

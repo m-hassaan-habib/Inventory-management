@@ -7,6 +7,7 @@ bp = Blueprint("invoices", __name__, url_prefix="/invoices")
 def list_invoices():
     db = get_db()
     cursor = db.cursor(dictionary=True)
+
     cursor.execute("""
         SELECT i.id, i.invoice_number, i.invoice_date, i.status,
                v.name AS vendor_name,
@@ -18,7 +19,19 @@ def list_invoices():
         ORDER BY i.invoice_date DESC
     """)
     invoices = cursor.fetchall()
+
+    # attach items per invoice
+    for inv in invoices:
+        cursor.execute("""
+            SELECT p.name AS product_name, ii.product_id, ii.quantity, ii.unit_price
+            FROM invoice_items ii
+            JOIN products p ON ii.product_id=p.id
+            WHERE ii.invoice_id=%s
+        """, (inv["id"],))
+        inv["items"] = cursor.fetchall()
+
     return render_template("invoices.html", invoices=invoices)
+
 
 @bp.route("/add", methods=["POST"])
 def add_invoice():
@@ -48,3 +61,46 @@ def add_invoice():
 
     db.commit()
     return redirect(url_for("invoices.list_invoices"))
+
+
+@bp.route("/edit/<int:invoice_id>", methods=["POST"])
+def edit_invoice(invoice_id):
+    data = request.form
+    vendor_id = data.get("vendor_id")
+    invoice_date = data.get("invoice_date")
+    status = data.get("status")
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("""UPDATE invoices 
+                      SET vendor_id=%s, invoice_date=%s, status=%s 
+                      WHERE id=%s""",
+                   (vendor_id, invoice_date, status, invoice_id))
+
+    # Clear old items
+    cursor.execute("DELETE FROM invoice_items WHERE invoice_id=%s", (invoice_id,))
+
+    # Insert new items
+    product_ids = request.form.getlist("product_id")
+    quantities = request.form.getlist("quantity")
+    prices = request.form.getlist("unit_price")
+
+    for pid, qty, price in zip(product_ids, quantities, prices):
+        if pid and qty:
+            cursor.execute("INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (%s,%s,%s,%s)",
+                           (invoice_id, pid, qty, price))
+
+    db.commit()
+    return redirect(url_for("invoices.list_invoices"))
+
+
+@bp.route("/delete/<int:invoice_id>", methods=["POST"])
+def delete_invoice(invoice_id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM invoices WHERE id=%s", (invoice_id,))
+    db.commit()
+    return redirect(url_for("invoices.list_invoices"))
+
+
