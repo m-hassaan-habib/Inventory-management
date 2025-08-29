@@ -48,7 +48,7 @@
         <td class="py-4 px-4">
           <span class="inline-block {% if inv.status|lower == 'paid' %}bg-green-100 text-green-700{% elif inv.status|lower == 'pending' %}bg-orange-100 text-orange-700{% elif inv.status|lower == 'overdue' %}bg-red-100 text-red-700{% endif %} text-xs font-semibold px-2 py-0.5 rounded-full select-none">{{ inv.status }}</span>
         </td>
-        <td class="py-4 px-4 font-semibold">${{ inv.total }}</td>
+        <td class="py-4 px-4 font-semibold">Rs.{{ inv.total }}</td>
         <td class="py-4 px-4 flex gap-2">
           <button aria-label="View invoice {{ inv.invoice_number }}" onclick='openViewInvoiceModal({{ inv|tojson }})' class="w-9 h-9 rounded-md border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 flex items-center justify-center transition duration-200 hover:scale-110">
             <i class="fas fa-eye"></i>

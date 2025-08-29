@@ -29,7 +29,7 @@ The app provides vendors, products, invoices, reporting, and a dashboard with li
 - **Reports**  
   - Quick filters (Today, 7/15/30 days, This Month, This Year)  
   - Vendor/date-based filtering  
-  - Summary cards (total revenue, invoices, items sold)  
+  - Summary cards (total expense, invoices, items purchased)  
   - Invoice details table with pagination  
 
 ---

@@ -65,13 +65,13 @@
     <i class="fas fa-file-invoice-dollar absolute top-4 right-4 text-slate-300 text-xs"></i>
   </div>
   <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative transition transform hover:scale-[1.02] hover:shadow-lg hover:border-indigo-200 duration-100">
-    <span class="block mb-2">Total Revenue</span>
-    <p class="font-bold text-green-600 text-lg mb-1">${{ summary.total_revenue }}</p>
-    <p class="text-[10px] text-slate-400">Gross revenue generated</p>
+    <span class="block mb-2">Total Expenses</span>
+    <p class="font-bold text-green-600 text-lg mb-1">Rs.{{ summary.total_revenue }}</p>
+    <p class="text-[10px] text-slate-400">Gross expenses</p>
     <span class="absolute top-4 right-4 text-green-500 text-xs">$</span>
   </div>
   <div class="border border-slate-200 rounded-lg p-4 text-xs text-slate-700 relative transition transform hover:scale-[1.02] hover:shadow-lg hover:border-indigo-200 duration-100">
-    <span class="block mb-2">Total Items Sold</span>
+    <span class="block mb-2">Total Items Purchased</span>
     <p class="font-bold text-orange-500 text-lg mb-1">{{ summary.total_items }}</p>
     <p class="text-[10px] text-slate-400">Total quantity across all invoices</p>
     <i class="fas fa-cube absolute top-4 right-4 text-orange-400 text-xs"></i>
@@ -102,7 +102,7 @@
           <span class="inline-block {% if inv.status|lower == 'paid' %}bg-green-100 text-green-600{% elif inv.status|lower == 'pending' %}bg-orange-100 text-orange-500{% elif inv.status|lower == 'overdue' %}bg-red-100 text-red-400{% endif %} text-[10px] font-semibold px-2 py-0.5 rounded-full select-none">{{ inv.status }}</span>
         </td>
         <td class="py-3 px-3 font-semibold">{{ inv.total_items }} items</td>
-        <td class="py-3 px-3">${{ inv.total }}</td>
+        <td class="py-3 px-3">Rs.{{ inv.total }}</td>
       </tr>
       {% endfor %}
     </tbody>

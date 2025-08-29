@@ -89,10 +89,10 @@ function openViewInvoiceModal(data){
           <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed">${it.quantity}</div>
         </div>
         <div class="col-span-2">
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed">$${parseFloat(it.unit_price).toFixed(2)}</div>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed">Rs.${parseFloat(it.unit_price).toFixed(2)}</div>
         </div>
         <div class="col-span-3">
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed">$${(it.quantity * it.unit_price).toFixed(2)}</div>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed">Rs.${(it.quantity * it.unit_price).toFixed(2)}</div>
         </div>
         <div class="col-span-1"></div>
       `;
