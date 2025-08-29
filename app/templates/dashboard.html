@@ -5,9 +5,9 @@
   <!-- Stats cards with animations -->
   <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6">
     <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow duration-100 transform hover:-translate-y-2">
-      <p class="text-xs text-gray-500 mb-1">Total Revenue</p>
+      <p class="text-xs text-gray-500 mb-1">Total Expenses</p>
       <div class="flex items-center justify-between">
-        <span class="font-extrabold text-lg text-gray-900">${{ total_revenue }}</span>
+        <span class="font-extrabold text-lg text-gray-900">Rs.{{ total_revenue }}</span>
         <i class="fas fa-dollar-sign text-green-500 text-sm"></i>
       </div>
       <p class="text-xs text-gray-400 mt-1">+20.1% from last month</p>
@@ -78,7 +78,7 @@
             <p class="text-xs text-gray-500">{{ inv.vendor_name }}</p>
           </div>
           <div class="flex items-center space-x-2">
-            <p class="font-semibold text-sm text-gray-900">${{ inv.total }}</p>
+            <p class="font-semibold text-sm text-gray-900">Rs.{{ inv.total }}</p>
             <span class="{% if inv.status == 'Paid' %}bg-green-100 text-green-600{% elif inv.status == 'Pending' %}bg-yellow-100 text-yellow-600{% else %}bg-red-100 text-red-600{% endif %} text-[9px] font-semibold px-2 py-0.5 rounded-full select-none">
               {{ inv.status|lower }}
             </span>
