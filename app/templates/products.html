@@ -8,15 +8,18 @@
       </h2>
       <p class="text-sm text-slate-500">Manage your product catalog</p>
     </div>
-    <button type="button" onclick="openProductModal()" class="inline-flex items-center gap-2 rounded-lg bg-indigo-700 px-4 py-2 text-white text-sm font-semibold hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+    <button type="button"
+            onclick="openProductModal()"
+            class="inline-flex items-center gap-2 rounded-lg bg-indigo-700 px-4 py-2 text-white text-sm font-semibold hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600">
       <i class="fas fa-plus"></i> Add Product
     </button>
   </div>
 
-  <form class="mb-6">
+  <form class="mb-6" onsubmit="return false;">
     <label for="search" class="sr-only">Search products</label>
     <div class="relative">
-      <input id="search" type="search" placeholder="Search products..." class="w-full rounded-lg border border-slate-200 py-3 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600" />
+      <input id="search" type="search" placeholder="Search products..."
+             class="w-full rounded-lg border border-slate-200 py-3 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600" />
       <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
         <i class="fas fa-search"></i>
       </div>
@@ -25,23 +28,35 @@
 
   <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for p in products %}
-    <article class="bg-white rounded-xl border border-slate-200 p-6 shadow-md shadow-slate-200/50 flex flex-col justify-between transform transition duration-300 hover:-translate-y-2 hover:shadow-xl">
+    <article onclick="openProductDetails({{ p.id }})"
+             class="cursor-pointer bg-white rounded-xl border border-slate-200 p-6 shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl">
       <header class="flex justify-between items-start mb-4">
         <div>
           <h3 class="text-slate-900 font-semibold text-sm leading-tight mb-1">{{ p.name }}</h3>
           <span class="inline-block bg-slate-200 text-slate-600 text-[10px] font-semibold rounded-full px-2 py-0.5 mb-2">{{ p.type }}</span>
+
           <p class="text-xs text-slate-500 mb-0.5">Variants</p>
           <p class="text-sm text-slate-900 mb-3">{{ p.variants }}</p>
+
           <p class="text-xs text-slate-500 mb-0.5">Default Price</p>
           <p class="text-sm font-semibold text-green-700 mb-3">Rs.{{ p.default_price }}</p>
+
           <p class="text-xs text-slate-500 mb-0.5">Usage Count</p>
           <span class="inline-block bg-slate-100 text-slate-700 text-[10px] font-bold rounded-full px-2 py-0.5">{{ p.usage_count }} invoices</span>
         </div>
+
         <div class="flex flex-col gap-2">
-          <button type="button" aria-label="Edit {{ p.name }}" onclick='openProductModal(true, {{ p|tojson }})' class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center transition duration-200 hover:scale-110">
+          <button type="button"
+                  aria-label="Edit {{ p.name }}"
+                  onclick='openProductEdit(event, {{ p|tojson }})'
+                  class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center transition duration-200 hover:scale-110">
             <i class="fas fa-edit text-xs"></i>
           </button>
-          <button type="button" aria-label="Delete {{ p.name }}" onclick='openDeleteProductModal({{ p.id }})' class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center transition duration-200 hover:scale-110">
+
+          <button type="button"
+                  aria-label="Delete {{ p.name }}"
+                  onclick="openProductDelete(event, {{ p.id }})"
+                  class="w-7 h-7 rounded-md border border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400 flex items-center justify-center transition duration-200 hover:scale-110">
             <i class="fas fa-trash-alt text-xs"></i>
           </button>
         </div>
@@ -51,66 +66,155 @@
   </div>
 
   <div id="pagination" class="flex justify-center items-center gap-2 mt-6">
-    <button onclick="prevPage()" disabled class="px-4 py-2 border border-slate-300 rounded-md text-sm">Previous</button>
+    <button id="prevBtn" onclick="prevPage()" disabled class="px-4 py-2 border border-slate-300 rounded-md text-sm">Previous</button>
     <span id="page-info">Page 1 of 1</span>
-    <button onclick="nextPage()" disabled class="px-4 py-2 border border-slate-300 rounded-md text-sm">Next</button>
+    <button id="nextBtn" onclick="nextPage()" disabled class="px-4 py-2 border border-slate-300 rounded-md text-sm">Next</button>
+  </div>
+
+  <!-- Product Details Modal -->
+  <div id="productDetailsModal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl w-full max-w-3xl mx-4 shadow-lg">
+      <div class="flex justify-between items-center p-5 border-b border-gray-200">
+        <h2 id="product-title" class="text-lg font-semibold text-gray-900"></h2>
+        <button onclick="closeProductDetails()" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <div id="product-meta" class="text-sm text-gray-600"></div>
+
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900 mb-2">Related Invoices</h3>
+          <div id="product-invoices" class="space-y-2">
+            <p class="text-gray-400 text-sm italic">Loading invoices...</p>
+          </div>
+          <p class="text-[11px] text-gray-400 mt-2">
+            Click to open invoice on the Invoices page.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<script>
-const allProducts = Array.from(document.querySelectorAll('#products-grid article'));
-const perPage = 9;
-let currentPage = 1;
-let filteredProducts = [...allProducts]; // start with all
-
-function filterProducts() {
-  const searchTerm = document.getElementById('search').value.toLowerCase();
-  filteredProducts = allProducts.filter(card => card.innerText.toLowerCase().includes(searchTerm));
-  currentPage = 1;
-  renderProductsPage();
-}
-
-function renderProductsPage() {
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / perPage));
-
-  // hide all
-  allProducts.forEach(p => p.style.display = 'none');
-
-  // show only current page
-  filteredProducts.forEach((p, i) => {
-    if (i >= (currentPage - 1) * perPage && i < currentPage * perPage) {
-      p.style.display = '';
-    }
-  });
-
-  document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
-  document.querySelector('button[onclick="prevPage()"]').disabled = currentPage === 1;
-  document.querySelector('button[onclick="nextPage()"]').disabled = currentPage >= totalPages;
-}
-
-function prevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    renderProductsPage();
-  }
-}
-
-function nextPage() {
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / perPage));
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderProductsPage();
-  }
-}
-
-// Attach search event
-document.getElementById('search').addEventListener('input', filterProducts);
-
-// Initial render
-renderProductsPage();
-</script>
-
-
 {% include "modals/add_product.html" %}
 {% include "modals/delete_product.html" %}
+
+<script>
+  const invoicesListUrl = "{{ url_for('invoices.list_invoices') }}";
+
+  function openProductEdit(e, product) {
+    e.preventDefault();
+    e.stopPropagation();
+    openProductModal(true, product);
+  }
+  function openProductDelete(e, productId) {
+    e.preventDefault();
+    e.stopPropagation();
+    openDeleteProductModal(productId);
+  }
+
+  const allProducts = Array.from(document.querySelectorAll('#products-grid article'));
+  const perPage = 9;
+  let currentPage = 1;
+  let filteredProducts = [...allProducts];
+
+  function filterProducts() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    filteredProducts = allProducts.filter(card => card.innerText.toLowerCase().includes(searchTerm));
+    currentPage = 1;
+    renderProductsPage();
+  }
+
+  function renderProductsPage() {
+    const totalPages = Math.max(1, Math.ceil(filteredProducts.length / perPage));
+    allProducts.forEach(p => p.style.display = 'none');
+
+    filteredProducts.forEach((p, i) => {
+      if (i >= (currentPage - 1) * perPage && i < currentPage * perPage) {
+        p.style.display = '';
+      }
+    });
+
+    document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      renderProductsPage();
+    }
+  }
+
+  function nextPage() {
+    const totalPages = Math.max(1, Math.ceil(filteredProducts.length / perPage));
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderProductsPage();
+    }
+  }
+
+  document.getElementById('search').addEventListener('input', filterProducts);
+  renderProductsPage();
+
+  async function openProductDetails(productId) {
+    const modal = document.getElementById('productDetailsModal');
+    const titleEl = document.getElementById('product-title');
+    const metaEl = document.getElementById('product-meta');
+    const listEl = document.getElementById('product-invoices');
+
+    listEl.innerHTML = '<p class="text-gray-400 text-sm italic">Loading invoices...</p>';
+    modal.classList.remove('hidden');
+
+    const res = await fetch(`/products/${productId}/invoices`);
+    if (!res.ok) {
+      listEl.innerHTML = '<p class="text-red-500 text-sm">Failed to load product invoices.</p>';
+      return;
+    }
+
+    const data = await res.json();
+    if (!data.product) {
+      listEl.innerHTML = '<p class="text-red-500 text-sm">Product not found.</p>';
+      return;
+    }
+
+    titleEl.textContent = data.product.name;
+    metaEl.innerHTML = `
+      <p><strong>Type:</strong> ${data.product.type}</p>
+      <p><strong>Variants:</strong> ${data.product.variants || '-'}</p>
+      <p><strong>Default Price:</strong> Rs.${data.product.default_price}</p>
+    `;
+
+    if (!data.invoices || data.invoices.length === 0) {
+      listEl.innerHTML = '<p class="text-gray-500 text-sm">No invoices found for this product.</p>';
+      return;
+    }
+
+    listEl.innerHTML = data.invoices.map(inv => `
+      <a href="${invoicesListUrl}?open=${inv.id}"
+         class="block">
+        <div class="flex justify-between items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition cursor-pointer">
+          <div>
+            <p class="font-semibold text-gray-800">${inv.invoice_number}</p>
+            <p class="text-xs text-gray-500">${inv.vendor_name}</p>
+          </div>
+          <div class="text-right">
+            <p class="font-semibold text-sm text-gray-800">Rs.${inv.total}</p>
+            <span class="text-[10px] px-2 py-0.5 rounded-full
+              ${inv.status === 'Paid' ? 'bg-green-100 text-green-700' : inv.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">
+              ${inv.status}
+            </span>
+          </div>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  function closeProductDetails() {
+    document.getElementById('productDetailsModal').classList.add('hidden');
+  }
+</script>
 {% endblock %}

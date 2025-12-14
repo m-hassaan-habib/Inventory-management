@@ -1,48 +1,74 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from db import get_db
 
 bp = Blueprint("invoices", __name__, url_prefix="/invoices")
+
 
 @bp.route("/")
 def list_invoices():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    # Fetch invoices
     cursor.execute("""
         SELECT i.id, i.invoice_number, DATE_FORMAT(i.invoice_date, '%Y-%m-%d') AS invoice_date, i.status,
                v.name AS vendor_name, v.id AS vendor_id,
-               SUM(ii.quantity * ii.unit_price) AS total
+               COALESCE(SUM(ii.quantity * ii.unit_price), 0) AS total
         FROM invoices i
         JOIN vendors v ON i.vendor_id = v.id
-        JOIN invoice_items ii ON i.id = ii.invoice_id
+        LEFT JOIN invoice_items ii ON i.id = ii.invoice_id
         GROUP BY i.id
         ORDER BY i.invoice_date DESC
     """)
     invoices = cursor.fetchall()
 
-    # Attach items to each invoice
     for inv in invoices:
         cursor.execute("""
             SELECT p.name AS product_name, ii.product_id, ii.quantity, ii.unit_price
             FROM invoice_items ii
             JOIN products p ON ii.product_id = p.id
             WHERE ii.invoice_id = %s
+            ORDER BY ii.id ASC
         """, (inv["id"],))
         inv["items"] = cursor.fetchall()
 
-    # Fetch vendors for dropdown
     cursor.execute("SELECT id, name FROM vendors ORDER BY name")
     vendors = cursor.fetchall()
 
-    # Fetch products for dropdown (include price)
     cursor.execute("SELECT id, name, default_price FROM products ORDER BY name")
     products = cursor.fetchall()
 
-    return render_template("invoices.html",
-                           invoices=invoices,
-                           vendors=vendors,
-                           products=products)
+    return render_template("invoices.html", invoices=invoices, vendors=vendors, products=products)
+
+
+@bp.route("/<int:invoice_id>")
+def get_invoice(invoice_id):
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT i.id, i.invoice_number,
+               DATE_FORMAT(i.invoice_date, '%Y-%m-%d') AS invoice_date,
+               i.status, i.vendor_id,
+               COALESCE(SUM(ii.quantity * ii.unit_price), 0) AS total
+        FROM invoices i
+        LEFT JOIN invoice_items ii ON i.id = ii.invoice_id
+        WHERE i.id = %s
+        GROUP BY i.id
+    """, (invoice_id,))
+    inv = cursor.fetchone()
+    if not inv:
+        return jsonify({"error": "not_found"}), 404
+
+    cursor.execute("""
+        SELECT ii.product_id, p.name AS product_name, ii.quantity, ii.unit_price
+        FROM invoice_items ii
+        JOIN products p ON p.id = ii.product_id
+        WHERE ii.invoice_id = %s
+        ORDER BY ii.id ASC
+    """, (invoice_id,))
+    inv["items"] = cursor.fetchall()
+
+    return jsonify(inv)
 
 
 @bp.route("/add", methods=["POST"])
@@ -89,10 +115,11 @@ def edit_invoice(invoice_id):
     db = get_db()
     cursor = db.cursor()
 
-    cursor.execute("""UPDATE invoices 
-                      SET vendor_id=%s, invoice_date=%s, status=%s 
-                      WHERE id=%s""",
-                   (vendor_id, invoice_date, status, invoice_id))
+    cursor.execute("""
+        UPDATE invoices
+        SET vendor_id=%s, invoice_date=%s, status=%s
+        WHERE id=%s
+    """, (vendor_id, invoice_date, status, invoice_id))
 
     cursor.execute("DELETE FROM invoice_items WHERE invoice_id=%s", (invoice_id,))
 
@@ -102,8 +129,10 @@ def edit_invoice(invoice_id):
 
     for pid, qty, price in zip(product_ids, quantities, prices):
         if pid and qty:
-            cursor.execute("INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (%s,%s,%s,%s)",
-                           (invoice_id, pid, qty, price))
+            cursor.execute(
+                "INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (%s,%s,%s,%s)",
+                (invoice_id, pid, qty, price),
+            )
 
     db.commit()
     return redirect(url_for("invoices.list_invoices"))
@@ -116,4 +145,3 @@ def delete_invoice(invoice_id):
     cursor.execute("DELETE FROM invoices WHERE id=%s", (invoice_id,))
     db.commit()
     return redirect(url_for("invoices.list_invoices"))
-
