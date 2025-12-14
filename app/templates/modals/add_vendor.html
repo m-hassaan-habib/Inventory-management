@@ -1,76 +1,127 @@
-<div id="vendorModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" aria-hidden="true">
-  <div role="dialog" aria-modal="true" aria-labelledby="modal-title" class="bg-white rounded-xl max-w-4xl w-full mx-4">
+<div id="vendorModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden" aria-hidden="true">
+  <div role="dialog" aria-modal="true" aria-labelledby="vendor-modal-title"
+       class="w-full max-w-4xl mx-4 rounded-xl bg-white border border-gray-200 shadow-xl
+              dark:bg-[#161616] dark:border-white/10">
     <div class="flex justify-between items-center px-6 pt-6">
-      <h2 id="modal-title" class="text-gray-900 font-semibold text-lg leading-6">Add New Vendor</h2>
-      <button aria-label="Close modal" onclick="closeVendorModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <h2 id="vendor-modal-title" class="text-gray-900 font-semibold text-lg leading-6 dark:text-white">Add New Vendor</h2>
+
+      <button aria-label="Close modal" onclick="closeVendorModal()"
+              class="text-gray-400 hover:text-gray-600 focus:outline-none
+                     dark:text-white/50 dark:hover:text-white">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
+
     <form id="vendorForm" method="post" action="{{ url_for('vendors.add_vendor') }}" class="px-6 pb-8 space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
         <div>
-          <label for="vendorName" class="block text-xs font-medium text-gray-700 mb-1">Vendor Name <span class="text-red-600">*</span></label>
-          <input type="text" name="name" id="vendorName" required class="block w-full rounded-md border border-indigo-600 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="vendorName" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">
+            Vendor Name <span class="text-red-600">*</span>
+          </label>
+          <input type="text" name="name" id="vendorName" required
+                 class="block w-full rounded-md border border-indigo-600 px-3 py-2 text-sm text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                        dark:bg-[#1d1d1d] dark:text-white dark:placeholder-white/30 dark:border-white/10 dark:focus:border-indigo-500">
         </div>
+
         <div>
-          <label for="vendorAddress" class="block text-xs font-medium text-gray-700 mb-1">Address</label>
-          <input type="text" name="address" id="vendorAddress" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="vendorAddress" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">Address</label>
+          <input type="text" name="address" id="vendorAddress"
+                 class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                        dark:bg-[#1d1d1d] dark:text-white dark:placeholder-white/30 dark:border-white/10 dark:focus:border-indigo-500">
         </div>
+
         <div class="sm:col-span-2">
-          <label for="vendorPhone" class="block text-xs font-medium text-gray-700 mb-1">Phone Numbers <span class="text-red-600">*</span></label>
+          <label class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">
+            Phone Numbers <span class="text-red-600">*</span>
+          </label>
           <div id="phone-list" class="space-y-2"></div>
         </div>
+
         <div>
-          <label for="vendorEmail" class="block text-xs font-medium text-gray-700 mb-1">Email</label>
-          <input type="email" name="email" id="vendorEmail" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="vendorEmail" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">Email</label>
+          <input type="email" name="email" id="vendorEmail"
+                 class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                        dark:bg-[#1d1d1d] dark:text-white dark:placeholder-white/30 dark:border-white/10 dark:focus:border-indigo-500">
         </div>
       </div>
+
       <div class="flex justify-end space-x-3">
-        <button type="button" onclick="closeVendorModal()" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Cancel</button>
-        <button type="submit" id="vendorSubmitBtn" class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Add Vendor</button>
+        <button type="button" onclick="closeVendorModal()"
+                class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm
+                       hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2
+                       dark:bg-transparent dark:text-white/80 dark:border-white/10 dark:hover:bg-white/5 dark:focus:ring-offset-0">
+          Cancel
+        </button>
+
+        <button type="submit" id="vendorSubmitBtn"
+                class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-2 text-sm font-medium text-white shadow-sm
+                       hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2
+                       dark:focus:ring-offset-0">
+          Add Vendor
+        </button>
       </div>
     </form>
   </div>
 </div>
 
 <script>
+function vendorPhoneInput(value = "", required = false) {
+  const inp = document.createElement("input");
+  inp.type = "text";
+  inp.name = "phones";
+  inp.value = value;
+  if (required) inp.required = true;
+  inp.className =
+    "block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 " +
+    "focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 " +
+    "dark:bg-[#1d1d1d] dark:text-white dark:placeholder-white/30 dark:border-white/10 dark:focus:border-indigo-500";
+  return inp;
+}
+
 function openVendorModal(edit=false, data={}) {
   const modal = document.getElementById('vendorModal');
   modal.classList.remove('hidden');
   modal.setAttribute('aria-hidden', 'false');
 
-  if(edit){
-    document.getElementById('modal-title').innerText="Edit Vendor";
-    document.getElementById('vendorSubmitBtn').innerText="Update Vendor";
-    document.getElementById('vendorForm').action="/vendors/edit/"+data.id;
+  const title = document.getElementById('vendor-modal-title');
+  const submitBtn = document.getElementById('vendorSubmitBtn');
+  const form = document.getElementById('vendorForm');
+  const phoneList = document.getElementById('phone-list');
 
-    document.getElementById('vendorName').value=data.name;
-    document.getElementById('vendorAddress').value=data.address || "";
-    document.getElementById('vendorEmail').value=data.email || "";
-    
-    let phoneList = document.getElementById('phone-list');
+  if (edit) {
+    title.innerText = "Edit Vendor";
+    submitBtn.innerText = "Update Vendor";
+    form.action = "/vendors/edit/" + data.id;
+
+    document.getElementById('vendorName').value = data.name || "";
+    document.getElementById('vendorAddress').value = data.address || "";
+    document.getElementById('vendorEmail').value = data.email || "";
+
     phoneList.innerHTML = "";
-    if(data.phones){
-      data.phones.split(",").forEach(ph => {
-        let inp = document.createElement("input");
-        inp.type = "text"; inp.name = "phones"; inp.value = ph.trim();
-        inp.className = "block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600";
-        phoneList.appendChild(inp);
+    if (data.phones) {
+      data.phones.split(",").map(s => s.trim()).filter(Boolean).forEach(ph => {
+        phoneList.appendChild(vendorPhoneInput(ph, false));
       });
     }
+    if (!phoneList.children.length) phoneList.appendChild(vendorPhoneInput("", true));
   } else {
-    document.getElementById('modal-title').innerText="Add New Vendor";
-    document.getElementById('vendorSubmitBtn').innerText="Add Vendor";
-    document.getElementById('vendorForm').action="/vendors/add";
-    document.getElementById('vendorForm').reset();
-    let phoneList = document.getElementById('phone-list');
-    phoneList.innerHTML = '<input type="text" name="phones" id="vendorPhone" required class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">';
+    title.innerText = "Add New Vendor";
+    submitBtn.innerText = "Add Vendor";
+    form.action = "/vendors/add";
+    form.reset();
+
+    phoneList.innerHTML = "";
+    phoneList.appendChild(vendorPhoneInput("", true));
   }
 }
 
-function closeVendorModal(){
+function closeVendorModal() {
   const modal = document.getElementById('vendorModal');
   modal.classList.add('hidden');
   modal.setAttribute('aria-hidden', 'true');
