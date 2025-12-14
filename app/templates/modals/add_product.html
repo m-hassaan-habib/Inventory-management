@@ -1,35 +1,77 @@
-<div id="productModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" aria-hidden="true">
-  <div role="dialog" aria-modal="true" aria-labelledby="modal-title" class="bg-white rounded-xl max-w-4xl w-full mx-4">
+<div id="productModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden" aria-hidden="true">
+  <div role="dialog" aria-modal="true" aria-labelledby="product-modal-title"
+       class="w-full max-w-4xl mx-4 rounded-xl bg-white border border-gray-200 shadow-xl
+              dark:bg-[#161616] dark:border-white/10">
     <div class="flex justify-between items-center px-6 pt-6">
-      <h2 id="modal-title" class="text-gray-900 font-semibold text-lg leading-6">Add New Product</h2>
-      <button aria-label="Close modal" onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <h2 id="product-modal-title" class="text-gray-900 font-semibold text-lg leading-6 dark:text-white">Add New Product</h2>
+
+      <button aria-label="Close modal" onclick="closeProductModal()"
+              class="text-gray-400 hover:text-gray-600 focus:outline-none
+                     dark:text-white/50 dark:hover:text-white">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
+
     <form id="productForm" method="post" action="{{ url_for('products.add_product') }}" class="px-6 pb-8 space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
         <div>
-          <label for="productName" class="block text-xs font-medium text-gray-700 mb-1">Product Name <span class="text-red-600">*</span></label>
-          <input type="text" name="name" id="productName" required class="block w-full rounded-md border border-indigo-600 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="productName" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">
+            Product Name <span class="text-red-600">*</span>
+          </label>
+          <input type="text" name="name" id="productName" required
+                 class="block w-full rounded-md border border-indigo-600 px-3 py-2 text-sm text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                        dark:bg-[#1d1d1d] dark:text-white dark:placeholder-white/30 dark:border-white/10 dark:focus:border-indigo-500">
         </div>
+
         <div>
-          <label for="productType" class="block text-xs font-medium text-gray-700 mb-1">Product Type/Niche</label>
-          <input type="text" name="type" id="productType" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="productType" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">
+            Product Type/Niche
+          </label>
+          <input type="text" name="type" id="productType"
+                 class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                        dark:bg-[#1d1d1d] dark:text-white dark:placeholder-white/30 dark:border-white/10 dark:focus:border-indigo-500">
         </div>
+
         <div>
-          <label for="productVariants" class="block text-xs font-medium text-gray-700 mb-1">Variants/Sizes</label>
-          <input type="text" name="variants" id="productVariants" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="productVariants" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">
+            Variants/Sizes
+          </label>
+          <input type="text" name="variants" id="productVariants"
+                 class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                        dark:bg-[#1d1d1d] dark:text-white dark:placeholder-white/30 dark:border-white/10 dark:focus:border-indigo-500">
         </div>
+
         <div>
-          <label for="productPrice" class="block text-xs font-medium text-gray-700 mb-1">Default Price</label>
-          <input type="number" step="0.01" name="default_price" id="productPrice" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="productPrice" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">
+            Default Price
+          </label>
+          <input type="number" step="0.01" name="default_price" id="productPrice"
+                 class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                        dark:bg-[#1d1d1d] dark:text-white dark:placeholder-white/30 dark:border-white/10 dark:focus:border-indigo-500">
         </div>
       </div>
+
       <div class="flex justify-end space-x-3">
-        <button type="button" onclick="closeProductModal()" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Cancel</button>
-        <button type="submit" id="productSubmitBtn" class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Add Product</button>
+        <button type="button" onclick="closeProductModal()"
+                class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm
+                       hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2
+                       dark:bg-transparent dark:text-white/80 dark:border-white/10 dark:hover:bg-white/5 dark:focus:ring-offset-0">
+          Cancel
+        </button>
+
+        <button type="submit" id="productSubmitBtn"
+                class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-2 text-sm font-medium text-white shadow-sm
+                       hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2
+                       dark:focus:ring-offset-0">
+          Add Product
+        </button>
       </div>
     </form>
   </div>
@@ -41,24 +83,28 @@ function openProductModal(edit=false, data={}) {
   modal.classList.remove('hidden');
   modal.setAttribute('aria-hidden', 'false');
 
-  if(edit){
-    document.getElementById('modal-title').innerText="Edit Product";
-    document.getElementById('productSubmitBtn').innerText="Update Product";
-    document.getElementById('productForm').action="/products/edit/"+data.id;
+  const title = document.getElementById('product-modal-title');
+  const submitBtn = document.getElementById('productSubmitBtn');
+  const form = document.getElementById('productForm');
 
-    document.getElementById('productName').value=data.name;
-    document.getElementById('productType').value=data.type || "";
-    document.getElementById('productVariants').value=data.variants || "";
-    document.getElementById('productPrice').value=data.default_price || 0;
+  if (edit) {
+    title.innerText = "Edit Product";
+    submitBtn.innerText = "Update Product";
+    form.action = "/products/edit/" + data.id;
+
+    document.getElementById('productName').value = data.name || "";
+    document.getElementById('productType').value = data.type || "";
+    document.getElementById('productVariants').value = data.variants || "";
+    document.getElementById('productPrice').value = data.default_price ?? 0;
   } else {
-    document.getElementById('modal-title').innerText="Add New Product";
-    document.getElementById('productSubmitBtn').innerText="Add Product";
-    document.getElementById('productForm').action="/products/add";
-    document.getElementById('productForm').reset();
+    title.innerText = "Add New Product";
+    submitBtn.innerText = "Add Product";
+    form.action = "/products/add";
+    form.reset();
   }
 }
 
-function closeProductModal(){
+function closeProductModal() {
   const modal = document.getElementById('productModal');
   modal.classList.add('hidden');
   modal.setAttribute('aria-hidden', 'true');

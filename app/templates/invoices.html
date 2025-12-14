@@ -1,23 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- Title and create button -->
 <div class="flex justify-between items-center mb-4">
   <div>
-    <h2 class="text-indigo-900 font-extrabold text-2xl flex items-center gap-2">
-      <i class="fas fa-file-alt text-indigo-900"></i> Invoices
+    <h2 class="text-indigo-900 font-extrabold text-2xl flex items-center gap-2 dark:text-white">
+      <i class="fas fa-file-alt text-indigo-900 dark:text-white"></i> Invoices
     </h2>
-    <p class="text-indigo-600 text-sm">Create and manage invoices</p>
+    <p class="text-indigo-600 text-sm dark:text-white/60">Create and manage invoices</p>
   </div>
   <button type="button" onclick="openInvoiceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-md px-4 py-2 flex items-center gap-2">
     <i class="fas fa-plus"></i> Create Invoice
   </button>
 </div>
 
-<!-- Search and filter -->
-<form class="flex gap-4 mb-6 max-w-full">
+<form class="flex gap-4 mb-6 max-w-full" onsubmit="return false;">
   <label for="search" class="sr-only">Search invoices</label>
-  <input id="search" type="search" placeholder="Search invoices..." class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-  <select aria-label="Filter by status" class="border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+  <input id="search" type="search" placeholder="Search invoices..."
+    class="flex-1 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+           border border-gray-200 text-gray-600 placeholder-gray-400 bg-white
+           dark:border-white/10 dark:text-white/80 dark:placeholder-white/30 dark:bg-[#202020]" />
+  <select aria-label="Filter by status"
+    class="rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+           border border-gray-200 text-gray-600 bg-white
+           dark:border-white/10 dark:text-white/80 dark:bg-[#202020]">
     <option>All Status</option>
     <option>Paid</option>
     <option>Pending</option>
@@ -25,38 +29,88 @@
   </select>
 </form>
 
-<!-- Table container -->
 <section class="flex-1 overflow-auto">
-  <h3 class="text-gray-900 font-bold text-lg mb-4">All Invoices ({{ invoices|length }})</h3>
-  <table class="w-full border-collapse rounded-lg border border-gray-100 overflow-hidden">
-    <thead class="bg-white border-b border-gray-100">
-      <tr class="text-xs text-gray-500 text-left">
+  <h3 class="text-gray-900 font-bold text-lg mb-4 dark:text-white">All Invoices ({{ invoices|length }})</h3>
+
+  <table class="w-full border-collapse rounded-lg overflow-hidden border border-gray-100 dark:border-white/10">
+    <thead class="bg-white border-b border-gray-100 dark:bg-[#202020] dark:border-white/10">
+      <tr class="text-xs text-gray-500 text-left dark:text-white/60">
         <th class="py-3 px-4 font-normal">Invoice #</th>
         <th class="py-3 px-4 font-normal">Vendor</th>
+        <th class="py-3 px-4 font-normal">Products</th>
         <th class="py-3 px-4 font-normal">Date</th>
         <th class="py-3 px-4 font-normal">Status</th>
         <th class="py-3 px-4 font-normal">Amount</th>
         <th class="py-3 px-4 font-normal">Actions</th>
       </tr>
     </thead>
-    <tbody id="invoices-tbody" class="bg-white divide-y divide-gray-100 text-sm text-gray-900">
+
+    <tbody id="invoices-tbody" class="bg-white text-sm text-gray-900 divide-y divide-gray-100 dark:bg-[#202020] dark:text-white/85 dark:divide-white/10">
       {% for inv in invoices %}
-      <tr class="transition duration-100 ease-in-out hover:bg-indigo-10 hover:-translate-y-1 hover:shadow-md">
-        <td class="py-4 px-4 font-semibold">{{ inv.invoice_number }}</td>
-        <td class="py-4 px-4">{{ inv.vendor_name }}</td>
-        <td class="py-4 px-4">{{ inv.invoice_date }}</td>
+      <tr class="transition duration-100 ease-in-out hover:-translate-y-1 hover:shadow-md
+                 hover:bg-gray-50 dark:hover:bg-white/5">
+        <td class="py-4 px-4 font-semibold whitespace-nowrap">{{ inv.invoice_number }}</td>
+
         <td class="py-4 px-4">
-          <span class="inline-block {% if inv.status|lower == 'paid' %}bg-green-100 text-green-700{% elif inv.status|lower == 'pending' %}bg-orange-100 text-orange-700{% elif inv.status|lower == 'overdue' %}bg-red-100 text-red-700{% endif %} text-xs font-semibold px-2 py-0.5 rounded-full select-none">{{ inv.status }}</span>
+          <div class="font-medium text-gray-900 dark:text-white">{{ inv.vendor_name }}</div>
         </td>
-        <td class="py-4 px-4 font-semibold">Rs.{{ inv.total }}</td>
-        <td class="py-4 px-4 flex gap-2">
-          <button aria-label="View invoice {{ inv.invoice_number }}" onclick='openViewInvoiceModal({{ inv|tojson }})' class="w-9 h-9 rounded-md border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 flex items-center justify-center transition duration-200 hover:scale-110">
+
+        <td class="py-4 px-4">
+          {% set seen = namespace(names=[]) %}
+          <div class="flex flex-wrap gap-1.5 max-w-[360px]">
+            {% for it in inv['items'] %}
+              {% if it.product_name not in seen.names %}
+                {% set _ = seen.names.append(it.product_name) %}
+                <span
+                  class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold
+                         border border-gray-200 bg-gray-50 text-gray-700
+                         dark:border-white/10 dark:bg-white/5 dark:text-white/75"
+                  title="{{ it.product_name }}"
+                >
+                  {{ it.product_name }}
+                </span>
+              {% endif %}
+            {% endfor %}
+
+            {% if inv['items']|length == 0 %}
+              <span class="text-xs text-gray-400 italic dark:text-white/40">No items</span>
+            {% endif %}
+          </div>
+        </td>
+
+        <td class="py-4 px-4 whitespace-nowrap text-gray-700 dark:text-white/70">{{ inv.invoice_date }}</td>
+
+        <td class="py-4 px-4">
+          <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full select-none
+            {% if inv.status|lower == 'paid' %}
+              bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300
+            {% elif inv.status|lower == 'pending' %}
+              bg-orange-100 text-orange-700 dark:bg-yellow-500/15 dark:text-yellow-300
+            {% elif inv.status|lower == 'overdue' %}
+              bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300
+            {% endif %}
+          ">{{ inv.status }}</span>
+        </td>
+
+        <td class="py-4 px-4 font-semibold whitespace-nowrap">Rs.{{ inv.total }}</td>
+
+        <td class="py-4 px-4 flex gap-2 whitespace-nowrap">
+          <button aria-label="View invoice {{ inv.invoice_number }}" onclick='openViewInvoiceModal({{ inv|tojson }})'
+            class="w-9 h-9 rounded-md flex items-center justify-center transition duration-200 hover:scale-110
+                   border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300
+                   dark:border-white/10 dark:text-white/70 dark:hover:text-white dark:hover:border-white/20 dark:hover:bg-white/5">
             <i class="fas fa-eye"></i>
           </button>
-          <button aria-label="Edit invoice {{ inv.invoice_number }}" onclick='openInvoiceModal(true, {{ inv|tojson }})' class="w-9 h-9 rounded-md border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 flex items-center justify-center transition duration-200 hover:scale-110">
+          <button aria-label="Edit invoice {{ inv.invoice_number }}" onclick='openInvoiceModal(true, {{ inv|tojson }})'
+            class="w-9 h-9 rounded-md flex items-center justify-center transition duration-200 hover:scale-110
+                   border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300
+                   dark:border-white/10 dark:text-white/70 dark:hover:text-white dark:hover:border-white/20 dark:hover:bg-white/5">
             <i class="fas fa-edit"></i>
           </button>
-          <button aria-label="Delete invoice {{ inv.invoice_number }}" onclick='openDeleteInvoiceModal({{ inv.id }})' class="w-9 h-9 rounded-md border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 flex items-center justify-center transition duration-200 hover:scale-110">
+          <button aria-label="Delete invoice {{ inv.invoice_number }}" onclick='openDeleteInvoiceModal({{ inv.id }})'
+            class="w-9 h-9 rounded-md flex items-center justify-center transition duration-200 hover:scale-110
+                   border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300
+                   dark:border-white/10 dark:text-white/70 dark:hover:text-white dark:hover:border-white/20 dark:hover:bg-white/5">
             <i class="fas fa-trash-alt"></i>
           </button>
         </td>
@@ -66,18 +120,25 @@
   </table>
 </section>
 
-
 <div id="pagination" class="flex justify-center items-center gap-2 mt-6">
-  <button onclick="prevPage()" disabled class="px-4 py-2 border border-gray-300 rounded-md text-sm">Previous</button>
-  <span id="page-info">Page 1 of 1</span>
-  <button onclick="nextPage()" disabled class="px-4 py-2 border border-gray-300 rounded-md text-sm">Next</button>
+  <button onclick="prevPage()" disabled
+    class="px-4 py-2 rounded-md text-sm border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50
+           dark:border-white/10 dark:text-white/75 dark:bg-[#202020] dark:hover:bg-white/5">
+    Previous
+  </button>
+  <span id="page-info" class="text-gray-700 dark:text-white/70">Page 1 of 1</span>
+  <button onclick="nextPage()" disabled
+    class="px-4 py-2 rounded-md text-sm border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50
+           dark:border-white/10 dark:text-white/75 dark:bg-[#202020] dark:hover:bg-white/5">
+    Next
+  </button>
 </div>
 
 <script>
 const rows = Array.from(document.querySelectorAll('#invoices-tbody tr'));
 const perPage = 10;
 let currentPage = 1;
-let filteredRows = [...rows]; // start with all rows
+let filteredRows = [...rows];
 
 function filterInvoices() {
   const searchTerm = document.getElementById('search').value.toLowerCase();
@@ -85,8 +146,7 @@ function filterInvoices() {
 
   filteredRows = rows.filter(row => {
     const invoiceText = row.innerText.toLowerCase();
-    const statusText = row.querySelector('td:nth-child(4) span').innerText.toLowerCase();
-
+    const statusText = row.querySelector('td:nth-child(5) span').innerText.toLowerCase();
     const matchesSearch = !searchTerm || invoiceText.includes(searchTerm);
     const matchesStatus = statusFilter === 'all status' || statusText === statusFilter;
     return matchesSearch && matchesStatus;
@@ -99,7 +159,7 @@ function filterInvoices() {
 function renderPage() {
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / perPage));
 
-  rows.forEach(r => r.style.display = 'none'); // hide all
+  rows.forEach(r => r.style.display = 'none');
   filteredRows.forEach((row, i) => {
     if (i >= (currentPage - 1) * perPage && i < currentPage * perPage) {
       row.style.display = '';
@@ -126,16 +186,34 @@ function nextPage() {
   }
 }
 
-// Attach events
 document.getElementById('search').addEventListener('input', filterInvoices);
 document.querySelector('select[aria-label="Filter by status"]').addEventListener('change', filterInvoices);
-
-// Initial load
 renderPage();
 </script>
-
 
 {% include "modals/add_invoice.html" %}
 {% include "modals/delete_invoice.html" %}
 {% include "modals/view_invoice.html" %}
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const openId = params.get('open');
+  if (!openId) return;
+
+  if (typeof openInvoiceModal !== 'function') return;
+
+  try {
+    const resp = await fetch(`/invoices/${openId}`);
+    if (!resp.ok) return;
+
+    const inv = await resp.json();
+    await openInvoiceModal(true, inv);
+
+    params.delete('open');
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.replaceState({}, '', newUrl);
+  } catch (_) {}
+});
+</script>
 {% endblock %}

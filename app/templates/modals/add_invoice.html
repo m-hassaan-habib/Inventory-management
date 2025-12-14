@@ -1,30 +1,49 @@
-<div id="invoiceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" aria-hidden="true">
-  <div role="dialog" aria-modal="true" aria-labelledby="modal-title" class="bg-white rounded-xl max-w-4xl w-full mx-4">
+<div id="invoiceModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden" aria-hidden="true">
+  <div role="dialog" aria-modal="true" aria-labelledby="modal-title"
+       class="bg-white rounded-xl max-w-4xl w-full mx-4 shadow-xl border border-gray-200
+              dark:bg-[#121212] dark:border-white/10">
     <div class="flex justify-between items-center px-6 pt-6">
-      <h2 id="modal-title" class="text-gray-900 font-semibold text-lg leading-6">Create New Invoice</h2>
-      <button aria-label="Close modal" onclick="closeInvoiceModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+      <h2 id="modal-title" class="text-gray-900 font-semibold text-lg leading-6 dark:text-white">Create New Invoice</h2>
+      <button aria-label="Close modal" onclick="closeInvoiceModal()"
+              class="text-gray-400 hover:text-gray-600 focus:outline-none dark:hover:text-white/80">
         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
+
     <form id="invoiceForm" method="post" action="{{ url_for('invoices.add_invoice') }}" class="px-6 pb-8 space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
         <div>
-          <label for="invoiceDate" class="block text-xs font-medium text-gray-700 mb-1">Invoice Date <span class="text-red-600">*</span></label>
-          <input type="date" name="invoice_date" id="invoiceDate" required class="block w-full rounded-md border border-indigo-600 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="invoiceDate" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">
+            Invoice Date <span class="text-red-600">*</span>
+          </label>
+          <input type="date" name="invoice_date" id="invoiceDate" required
+                 class="block w-full rounded-md border border-indigo-600 px-3 py-2 text-sm text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                        dark:bg-[#171717] dark:text-white dark:border-white/10 dark:focus:ring-indigo-500">
         </div>
+
         <div>
-          <label for="invoiceStatus" class="block text-xs font-medium text-gray-700 mb-1">Status</label>
-          <select name="status" id="invoiceStatus" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="invoiceStatus" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">Status</label>
+          <select name="status" id="invoiceStatus"
+                  class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+                         focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                         dark:bg-[#171717] dark:text-white dark:border-white/10 dark:focus:ring-indigo-500">
             <option value="Pending">Pending</option>
             <option value="Paid">Paid</option>
             <option value="Overdue">Overdue</option>
           </select>
         </div>
+
         <div>
-          <label for="invoiceVendor" class="block text-xs font-medium text-gray-700 mb-1">Vendor <span class="text-red-600">*</span></label>
-          <select name="vendor_id" id="invoiceVendor" required class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+          <label for="invoiceVendor" class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">
+            Vendor <span class="text-red-600">*</span>
+          </label>
+          <select name="vendor_id" id="invoiceVendor" required
+                  class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+                         focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                         dark:bg-[#171717] dark:text-white dark:border-white/10 dark:focus:ring-indigo-500">
             {% for v in vendors %}
             <option value="{{ v.id }}">{{ v.name }}</option>
             {% endfor %}
@@ -34,9 +53,12 @@
 
       <div>
         <div class="flex justify-between items-center mb-2">
-          <span class="text-sm font-medium text-gray-900">Invoice Items</span>
-          <button type="button" onclick="addInvoiceItem()" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
-            <svg class="w-4 h-4 mr-1 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+          <span class="text-sm font-medium text-gray-900 dark:text-white">Invoice Items</span>
+          <button type="button" onclick="addInvoiceItem()"
+                  class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50
+                         focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                         dark:bg-[#171717] dark:text-white/80 dark:border-white/10 dark:hover:bg-white/5 dark:focus:ring-indigo-500">
+            <svg class="w-4 h-4 mr-1 text-gray-600 dark:text-white/60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
@@ -46,14 +68,25 @@
         <div id="invoice-items" class="space-y-3"></div>
       </div>
 
-      <div class="bg-gray-50 rounded-md px-6 py-3 flex justify-between items-center">
-        <span class="font-semibold text-gray-900 text-lg">Grand Total:</span>
-        <span class="font-semibold text-gray-900 text-lg">Rs.<span id="grandTotal">0.00</span></span>
+      <div class="rounded-md px-6 py-3 flex justify-between items-center bg-gray-50 border border-gray-200
+                  dark:bg-[#171717] dark:border-white/10">
+        <span class="font-semibold text-gray-900 text-lg dark:text-white">Grand Total:</span>
+        <span class="font-semibold text-gray-900 text-lg dark:text-white">Rs.<span id="grandTotal">0.00</span></span>
       </div>
 
       <div class="flex justify-end space-x-3">
-        <button type="button" onclick="closeInvoiceModal()" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Cancel</button>
-        <button type="submit" id="invoiceSubmitBtn" class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Create Invoice</button>
+        <button type="button" onclick="closeInvoiceModal()"
+                class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50
+                       focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2
+                       dark:bg-[#171717] dark:text-white/80 dark:border-white/10 dark:hover:bg-white/5 dark:focus:ring-indigo-500 dark:focus:ring-offset-0">
+          Cancel
+        </button>
+        <button type="submit" id="invoiceSubmitBtn"
+                class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700
+                       focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2
+                       dark:focus:ring-indigo-500 dark:focus:ring-offset-0">
+          Create Invoice
+        </button>
       </div>
     </form>
   </div>
@@ -70,47 +103,30 @@ function openInvoiceModal(edit = false, data = {}) {
     document.getElementById('invoiceSubmitBtn').innerText = "Update Invoice";
     document.getElementById('invoiceForm').action = "/invoices/edit/" + data.id;
 
-    // Populate form fields
-    document.getElementById('invoiceDate').value = data.invoice_date; // Already in YYYY-MM-DD format
-    document.getElementById('invoiceStatus').value = data.status;
-    document.getElementById('invoiceVendor').value = data.vendor_id;
+    document.getElementById('invoiceDate').value = data.invoice_date || "";
+    document.getElementById('invoiceStatus').value = data.status || "Pending";
+    document.getElementById('invoiceVendor').value = data.vendor_id || "";
 
-    // Populate invoice items
-    let container = document.getElementById('invoice-items');
+    const container = document.getElementById('invoice-items');
     container.innerHTML = "";
-    data.items.forEach(it => {
-      let row = document.createElement('div');
-      row.classList.add('grid', 'grid-cols-12', 'gap-3', 'items-center', 'rounded-md', 'border', 'border-gray-200', 'bg-white', 'px-4', 'py-3');
-      row.innerHTML = `
-        <div class="col-span-5">
-          <select name="product_id" onchange="updateUnitPrice(this)" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
-            {% for p in products %}
-            <option value="{{ p.id }}" data-price="{{ p.default_price }}">{{ p.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-span-2">
-          <input type="number" name="quantity" value="${it.quantity}" min="1" onchange="recalcRow(this)" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
-        </div>
-        <div class="col-span-2">
-          <input type="number" step="0.01" name="unit_price" value="${it.unit_price}" onchange="recalcRow(this)" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
-        </div>
-        <div class="col-span-2">
-          <input type="text" class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed" value="Rs.${((it.quantity * it.unit_price) || 0).toFixed(2)}" readonly>
-        </div>
-        <div class="col-span-1 flex justify-center">
-          <button type="button" aria-label="Delete item" onclick="deleteInvoiceItem(this)" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
-            </svg>
-          </button>
-        </div>
-      `;
-      row.querySelector("select").value = it.product_id;
+
+    (data.items || []).forEach(it => {
+      const row = buildInvoiceRow();
       container.appendChild(row);
+
+      const sel = row.querySelector('select[name="product_id"]');
+      const qty = row.querySelector('input[name="quantity"]');
+      const unit = row.querySelector('input[name="unit_price"]');
+
+      sel.value = it.product_id;
+      qty.value = it.quantity || 1;
+      unit.value = parseFloat(it.unit_price || 0).toFixed(2);
+
+      recalcRow(unit);
     });
-    // Recalculate grand total after all items are added
-    setTimeout(recalcGrandTotal, 0); // Ensure DOM is updated
+
+    if ((data.items || []).length === 0) addInvoiceItem();
+    recalcGrandTotal();
   } else {
     document.getElementById('modal-title').innerText = "Create New Invoice";
     document.getElementById('invoiceSubmitBtn').innerText = "Create Invoice";
@@ -128,66 +144,88 @@ function closeInvoiceModal() {
   modal.setAttribute('aria-hidden', 'true');
 }
 
-function addInvoiceItem() {
-  let div = document.createElement('div');
-  div.classList.add('grid', 'grid-cols-12', 'gap-3', 'items-center', 'rounded-md', 'border', 'border-gray-200', 'bg-white', 'px-4', 'py-3');
+function buildInvoiceRow() {
+  const div = document.createElement('div');
+  div.className = "invoice-row grid grid-cols-12 gap-3 items-center rounded-md border border-gray-200 bg-white px-4 py-3 " +
+                  "dark:border-white/10 dark:bg-[#121212]";
   div.innerHTML = `
     <div class="col-span-5">
-      <select name="product_id" onchange="updateUnitPrice(this)" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+      <select name="product_id" onchange="updateUnitPrice(this)"
+              class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900
+                     focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                     dark:bg-[#171717] dark:text-white dark:border-white/10 dark:focus:ring-indigo-500">
         {% for p in products %}
         <option value="{{ p.id }}" data-price="{{ p.default_price }}">{{ p.name }}</option>
         {% endfor %}
       </select>
     </div>
+
     <div class="col-span-2">
-      <input type="number" name="quantity" value="1" min="1" onchange="recalcRow(this)" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+      <input type="number" name="quantity" value="1" min="1" onchange="recalcRow(this)"
+             class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900
+                    focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                    dark:bg-[#171717] dark:text-white dark:border-white/10 dark:focus:ring-indigo-500">
     </div>
+
     <div class="col-span-2">
-      <input type="number" step="0.01" name="unit_price" value="0" onchange="recalcRow(this)" class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600">
+      <input type="number" step="0.01" name="unit_price" value="0" onchange="recalcRow(this)"
+             class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900
+                    focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600
+                    dark:bg-[#171717] dark:text-white dark:border-white/10 dark:focus:ring-indigo-500">
     </div>
+
     <div class="col-span-2">
-      <input type="text" class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed" value="Rs. 0.00" readonly>
+      <input type="text"
+             class="line-total block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed
+                    dark:border-white/10 dark:bg-[#171717] dark:text-white/80"
+             value="Rs.0.00" readonly>
     </div>
+
     <div class="col-span-1 flex justify-center">
-      <button type="button" aria-label="Delete item" onclick="deleteInvoiceItem(this)" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+      <button type="button" aria-label="Delete item" onclick="deleteInvoiceItem(this)"
+              class="text-gray-400 hover:text-gray-600 focus:outline-none dark:hover:text-white/80">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
         </svg>
       </button>
     </div>
   `;
-  document.getElementById('invoice-items').appendChild(div);
-  // Set default price for the first product
-  const select = div.querySelector('select[name="product_id"]');
+  return div;
+}
+
+function addInvoiceItem() {
+  const row = buildInvoiceRow();
+  document.getElementById('invoice-items').appendChild(row);
+  const select = row.querySelector('select[name="product_id"]');
   updateUnitPrice(select);
   recalcGrandTotal();
 }
 
 function deleteInvoiceItem(button) {
-  button.closest('.grid').remove();
+  button.closest('.invoice-row').remove();
   recalcGrandTotal();
 }
 
 function updateUnitPrice(selectElement) {
   const price = selectElement.options[selectElement.selectedIndex].getAttribute("data-price");
-  const row = selectElement.closest(".grid");
+  const row = selectElement.closest(".invoice-row");
   const unitInput = row.querySelector('input[name="unit_price"]');
   unitInput.value = parseFloat(price || 0).toFixed(2);
   recalcRow(unitInput);
 }
 
 function recalcRow(input) {
-  const row = input.closest(".grid");
+  const row = input.closest(".invoice-row");
   const qty = parseFloat(row.querySelector('input[name="quantity"]').value) || 0;
   const price = parseFloat(row.querySelector('input[name="unit_price"]').value) || 0;
   const total = qty * price;
-  row.querySelector("input[readonly]").value = `$${total.toFixed(2)}`;
+  row.querySelector(".line-total").value = `Rs.${total.toFixed(2)}`;
   recalcGrandTotal();
 }
 
 function recalcGrandTotal() {
   let total = 0;
-  document.querySelectorAll(".grid").forEach(row => {
+  document.querySelectorAll("#invoice-items .invoice-row").forEach(row => {
     const qty = parseFloat(row.querySelector('input[name="quantity"]').value) || 0;
     const price = parseFloat(row.querySelector('input[name="unit_price"]').value) || 0;
     total += qty * price;

@@ -1,36 +1,49 @@
-<div id="viewInvoiceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" aria-hidden="true">
-  <div role="dialog" aria-modal="true" aria-labelledby="modal-title" class="bg-white rounded-xl max-w-4xl w-full mx-4">
+<div id="viewInvoiceModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden" aria-hidden="true">
+  <div role="dialog" aria-modal="true" aria-labelledby="view-modal-title"
+       class="w-full max-w-4xl mx-4 rounded-xl bg-white border border-gray-200 shadow-xl
+              dark:bg-[#161616] dark:border-white/10">
     <div class="flex justify-between items-center px-6 pt-6">
-      <h2 id="view-modal-title" class="text-gray-900 font-semibold text-lg leading-6">Invoice Details</h2>
-      <button aria-label="Close modal" onclick="closeViewInvoiceModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <h2 id="view-modal-title" class="text-gray-900 font-semibold text-lg leading-6 dark:text-white">Invoice Details</h2>
+      <button aria-label="Close modal" onclick="closeViewInvoiceModal()"
+              class="text-gray-400 hover:text-gray-600 focus:outline-none
+                     dark:text-white/50 dark:hover:text-white">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
+
     <div class="px-6 pb-8 space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Invoice #</label>
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed">
+          <label class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">Invoice #</label>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed
+                      dark:border-white/10 dark:bg-[#1d1d1d] dark:text-white">
             <span id="viewInvoiceNumber"></span>
           </div>
         </div>
+
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Invoice Date</label>
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed">
+          <label class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">Invoice Date</label>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed
+                      dark:border-white/10 dark:bg-[#1d1d1d] dark:text-white">
             <span id="viewInvoiceDate"></span>
           </div>
         </div>
+
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed">
+          <label class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">Status</label>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed
+                      dark:border-white/10 dark:bg-[#1d1d1d] dark:text-white">
             <span id="viewInvoiceStatus"></span>
           </div>
         </div>
+
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Vendor</label>
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed">
+          <label class="block text-xs font-medium text-gray-700 mb-1 dark:text-white/70">Vendor</label>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed
+                      dark:border-white/10 dark:bg-[#1d1d1d] dark:text-white">
             <span id="viewInvoiceVendor"></span>
           </div>
         </div>
@@ -38,70 +51,100 @@
 
       <div>
         <div class="flex justify-between items-center mb-2">
-          <span class="text-sm font-medium text-gray-900">Invoice Items</span>
+          <span class="text-sm font-medium text-gray-900 dark:text-white">Invoice Items</span>
         </div>
+
         <div class="space-y-3">
-          <div class="grid grid-cols-12 gap-3 px-4 py-2 text-xs font-medium text-gray-500">
+          <div class="grid grid-cols-12 gap-3 px-4 py-2 text-xs font-medium text-gray-500 dark:text-white/50">
             <div class="col-span-5">Product</div>
             <div class="col-span-2 text-center">Qty</div>
             <div class="col-span-2 text-center">Unit Price</div>
-            <div class="col-span-2 text-center">Total</div>
-            <div class="col-span-1"></div> <!-- Empty column for alignment -->
+            <div class="col-span-3 text-center">Total</div>
           </div>
+
           <div id="viewInvoiceItems" class="space-y-3"></div>
         </div>
       </div>
 
-      <div class="bg-gray-50 rounded-md px-6 py-3 flex justify-between items-center">
-        <span class="font-semibold text-gray-900 text-lg">Grand Total:</span>
-        <span class="font-semibold text-gray-900 text-lg">$<span id="viewInvoiceTotal">0.00</span></span>
+      <div class="rounded-md px-6 py-3 flex justify-between items-center bg-gray-50 border border-gray-200
+                  dark:bg-[#1d1d1d] dark:border-white/10">
+        <span class="font-semibold text-gray-900 text-lg dark:text-white">Grand Total:</span>
+        <span class="font-semibold text-gray-900 text-lg dark:text-white">Rs.<span id="viewInvoiceTotal">0.00</span></span>
       </div>
 
-      <div class="flex justify-end space-x-3">
-        <button type="button" onclick="closeViewInvoiceModal()" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">Close</button>
+      <div class="flex justify-end">
+        <button type="button" onclick="closeViewInvoiceModal()"
+                class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm
+                       hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2
+                       dark:bg-transparent dark:text-white/80 dark:border-white/10 dark:hover:bg-white/5 dark:focus:ring-offset-0">
+          Close
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-function openViewInvoiceModal(data){
+function openViewInvoiceModal(data) {
   const modal = document.getElementById('viewInvoiceModal');
   modal.classList.remove('hidden');
   modal.setAttribute('aria-hidden', 'false');
-  document.getElementById('viewInvoiceNumber').innerText = data.invoice_number;
-  document.getElementById('viewInvoiceVendor').innerText = data.vendor_name;
-  document.getElementById('viewInvoiceDate').innerText = data.invoice_date;
-  document.getElementById('viewInvoiceStatus').innerText = data.status;
-  document.getElementById('viewInvoiceTotal').innerText = parseFloat(data.total).toFixed(2);
 
-  let container = document.getElementById('viewInvoiceItems');
-  container.innerHTML = "";
-  if(data.items){
+  document.getElementById('viewInvoiceNumber').innerText = data.invoice_number || '';
+  document.getElementById('viewInvoiceVendor').innerText = data.vendor_name || '';
+  document.getElementById('viewInvoiceDate').innerText = data.invoice_date || '';
+  document.getElementById('viewInvoiceStatus').innerText = data.status || '';
+  document.getElementById('viewInvoiceTotal').innerText = (parseFloat(data.total) || 0).toFixed(2);
+
+  const container = document.getElementById('viewInvoiceItems');
+  container.innerHTML = '';
+
+  if (Array.isArray(data.items) && data.items.length) {
     data.items.forEach(it => {
-      let row = document.createElement('div');
-      row.classList.add('grid', 'grid-cols-12', 'gap-3', 'items-center', 'rounded-md', 'border', 'border-gray-200', 'bg-white', 'px-4', 'py-3');
+      const qty = parseFloat(it.quantity) || 0;
+      const unit = parseFloat(it.unit_price) || 0;
+      const rowTotal = qty * unit;
+
+      const row = document.createElement('div');
+      row.className =
+        "grid grid-cols-12 gap-3 items-center rounded-md border border-gray-200 bg-white px-4 py-3 " +
+        "dark:border-white/10 dark:bg-[#161616]";
+
       row.innerHTML = `
         <div class="col-span-5">
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed">${it.product_name}</div>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 cursor-not-allowed
+                      dark:border-white/10 dark:bg-[#1d1d1d] dark:text-white">
+            ${it.product_name || ''}
+          </div>
         </div>
         <div class="col-span-2">
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed">${it.quantity}</div>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed
+                      dark:border-white/10 dark:bg-[#1d1d1d] dark:text-white">
+            ${qty}
+          </div>
         </div>
         <div class="col-span-2">
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed">Rs.${parseFloat(it.unit_price).toFixed(2)}</div>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed
+                      dark:border-white/10 dark:bg-[#1d1d1d] dark:text-white">
+            Rs.${unit.toFixed(2)}
+          </div>
         </div>
         <div class="col-span-3">
-          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed">Rs.${(it.quantity * it.unit_price).toFixed(2)}</div>
+          <div class="block w-full rounded-md border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900 text-center cursor-not-allowed
+                      dark:border-white/10 dark:bg-[#1d1d1d] dark:text-white">
+            Rs.${rowTotal.toFixed(2)}
+          </div>
         </div>
-        <div class="col-span-1"></div>
       `;
+
       container.appendChild(row);
     });
+  } else {
+    container.innerHTML = '<p class="text-sm text-gray-500 dark:text-white/50 italic px-4">No items.</p>';
   }
 }
 
-function closeViewInvoiceModal(){
+function closeViewInvoiceModal() {
   const modal = document.getElementById('viewInvoiceModal');
   modal.classList.add('hidden');
   modal.setAttribute('aria-hidden', 'true');
