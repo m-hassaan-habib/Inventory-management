@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% block content %}
 <section class="flex-1 p-6 overflow-auto">
@@ -108,7 +109,11 @@
 
         <div>
           <h3 class="text-sm font-semibold text-gray-900 mb-2 dark:text-white">Related Invoices</h3>
-          <div id="product-invoices" class="space-y-2">
+          <div
+            id="product-invoices"
+            class="space-y-2 max-h-[220px] overflow-y-auto pr-1 scroll-smooth
+                  scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent
+                  dark:scrollbar-thumb-white/20">
             <p class="text-gray-400 text-sm italic dark:text-white/40">Loading invoices...</p>
           </div>
           <p class="text-[11px] text-gray-400 mt-2 dark:text-white/40">Click to open invoice on the Invoices page.</p>
@@ -242,3 +247,4 @@
   }
 </script>
 {% endblock %}
+

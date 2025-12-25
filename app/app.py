@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+
+from flask import Flask, render_template, redirect, url_for
 from db import close_db
 from routes.dashboard import bp as dashboard_bp
 from routes.vendors import bp as vendors_bp
@@ -24,7 +25,8 @@ def create_app():
     # Default route
     @app.route("/")
     def home():
-        return render_template("dashboard.html")
+        return redirect(url_for("dashboard.dashboard"))
+
 
     return app
 
